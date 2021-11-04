@@ -320,19 +320,23 @@ var mySqrt = function(x) {
 可以理解成查找最后一个等于的
  * 
  */
-//这样写是错的，因为输出的顺序不对，所以不允许先排序
+function compare(a,b){
+    return a-b;
+}
 var intersection = function(nums1, nums2) {
     let result = [];
-    nums1 = nums1.sort();
-    nums2 = nums2.sort();
+    nums2 = nums2.sort(compare);
     for(let i = 0;i<nums1.length;i++){
         let temp = nums1[i];
+        //先查看resul中是否有这个元素了，如果有就退出此次循环
+        if(result.indexOf(temp)>-1){continue}
         let low = 0,high = nums2.length-1;
         while(low<=high){
             let mid = low + ((high - low) >> 1);
             if(nums2[mid] == temp){
-                if(mid == nums2.length || nums2[mid+1] != temp){
+                if(mid == nums2.length-1 || nums2[mid+1] != temp){
                     result.push(temp);
+                    break;
                 }else{
                     low = mid + 1;
                 }
@@ -346,3 +350,164 @@ var intersection = function(nums1, nums2) {
     return result
 
 };
+
+
+
+/**
+ * 剑指 Offer II 069. 山峰数组的顶部
+ * 符合下列属性的数组 arr 称为 山峰数组（山脉数组） ：
+
+    arr.length >= 3
+    存在 i（0 < i < arr.length - 1）使得：
+    arr[0] < arr[1] < ... arr[i-1] < arr[i]
+    arr[i] > arr[i+1] > ... > arr[arr.length - 1]
+    给定由整数组成的山峰数组 arr ，返回任何满足 arr[0] < arr[1] < ... arr[i - 1] < arr[i] > arr[i + 1] > ... > arr[arr.length - 1] 的下标 i ，即山峰顶部。
+
+     
+
+    示例 1：
+    输入：arr = [0,1,0]
+    输出：1
+
+    示例 2：
+    输入：arr = [1,3,5,4,2]
+    输出：2
+
+    示例 3：
+    输入：arr = [0,10,5,2]
+    输出：1
+
+
+    示例 4：
+    输入：arr = [3,4,5,1]
+    输出：2
+
+    示例 5：
+    输入：arr = [24,69,100,99,79,78,67,36,26,19]
+    输出：2
+
+
+
+
+    解析：查找到一个数组i，前面的数字都比它小，后面的数字都比小，
+
+    方法1：先对数组进行排序，然后取出最大值，查看最大值在原来数组中的位置
+ */
+
+    function compare(a,b){
+        return a-b;
+    }
+    var peakIndexInMountainArray = function(arr) {
+        let array2 = JSON.parse(JSON.stringify(arr));
+        array2 = array2.sort(compare)
+        let max = array2[array2.length - 1];
+        return arr.indexOf(max);
+    };
+
+/**
+ * 方法2  二分查找
+ * 
+ * 驼峰数组，如果值是驼峰的话，那么后一个值一定比前一个值小！
+ * 所以，如果折半查找的时候，当前的值与它后面一个元素进行相比，如果比他大，那么驼峰就有可能是他，先把这个值记下来，然后继续往左右
+ * 如果后面的元素比当前值大，那么肯定不是当前值，继续向右走
+ * 
+ */
+ var peakIndexInMountainArray = function(arr) {
+    let low = 0,high = arr.length -2,index = 0;
+    while(low <= high){
+            let mid = low + ((high - low) >> 1);
+            if(arr[mid] > arr[mid+1]){
+                    index = mid;
+                    high = mid -1;
+            }else{
+                low = mid +1;
+            }
+    }
+    return index;
+};
+
+/**
+ * 剑指 Offer II 006. 排序数组中两个数字之和
+ * 给定一个已按照 升序排列  的整数数组 numbers ，请你从数组中找出两个数满足相加之和等于目标数 target 。
+
+函数应该以长度为 2 的整数数组的形式返回这两个数的下标值。numbers 的下标 从 0 开始计数 ，所以答案数组应当满足 0 <= answer[0] < answer[1] < numbers.length 。
+
+假设数组中存在且只存在一对符合条件的数字，同时一个数字不能使用两次。
+
+ 
+
+示例 1：
+
+输入：numbers = [1,2,4,6,10], target = 8
+输出：[1,3]
+解释：2 与 6 之和等于目标数 8 。因此 index1 = 1, index2 = 3 。
+
+
+示例 2：
+
+输入：numbers = [2,3,4], target = 6
+输出：[0,2]
+
+
+示例 3：
+
+输入：numbers = [-1,0], target = -1
+输出：[0,1]
+
+ */
+var twoSum = function(numbers, target) {
+    let result = [];
+    for(let i=0;i<numbers.length;i++){
+        let temp = numbers[i];
+        let low = i+1,high = numbers.length-1;
+        while(low <= high){
+            let mid = low + ((high - low) >> 1);
+            if(temp + numbers[mid] == target){
+                result = [i,mid];
+                return result;
+            }else if(temp + numbers[mid] < target){
+                low = mid + 1;
+            }else{
+                high = mid - 1;
+            }
+        }
+    }
+    return result;
+};
+
+
+/**
+ * 剑指 Offer 57. 和为s的两个数字
+ * 输入一个递增排序的数组和一个数字s，在数组中查找两个数，使得它们的和正好是s。如果有多对数字的和等于s，则输出任意一对即可。
+
+ 
+
+示例 1：
+输入：nums = [2,7,11,15], target = 9
+输出：[2,7] 或者 [7,2]
+
+示例 2：
+输入：nums = [10,26,30,31,47,60], target = 40
+输出：[10,30] 或者 [30,10]
+
+ */
+var twoSum = function(nums, target) {
+    let result = [];
+        for(let i=0;i<nums.length;i++){
+            let temp = nums[i];
+            let low = i+1,high = nums.length-1;
+            while(low <= high){
+                let mid = low + ((high - low) >> 1);
+                if(temp + nums[mid] == target){
+                    result = [nums[i],nums[mid]];
+                    return result;
+                }else if(temp + nums[mid] < target){
+                    low = mid + 1;
+                }else{
+                    high = mid - 1;
+                }
+            }
+        }
+        return result;
+};
+
