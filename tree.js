@@ -76,6 +76,13 @@ function postOrder(node){
  * b、如果要删除的节点只有一个子节点，将父节点指向要删除的节点的指针 更改为 指向它的子节点。
  * c、如果要删除的节点中有两个子节点，需要找到这个节点的 右子树中的最小节点，将它移到到要删除的节点的位置上来。
  * 
+ * 
+ * 4、二叉树的时间复杂度：二叉树的时间复杂度与树的高度成正比。
+ * 如何求一棵包含n个节点的完全二叉树的高度？
+ * 完全二叉树中 节点n与层数h的关系如下
+ * n >= 1+ 2 + 4 + 8 + ... + 2^(h-2) + 1 最后一层只有一个节点
+ * n <= 1+ 2 + 4 + 8 + ... + 2^(h-2) + 2^(h-1) 最后一层也是满的
+ * 那么h <= log2n
  */
 
 class Node{
@@ -87,8 +94,8 @@ class Node{
 }
 
 class BinaryTree{
-    constructor(){
-        this.tree = new Node(0);
+    constructor(data){
+        this.tree = new Node(data);
     }
     binaryFind(data){
         let p = this.tree;
@@ -155,8 +162,23 @@ class BinaryTree{
         if(pp == null){this.tree = child}
         else if(pp.left == p) pp.left = child;
         else pp.right = child;
+
     }
 }
+
+
+
+/**
+ * 红黑树
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
 
 
 
