@@ -71,40 +71,92 @@ function postOrder(node){
  * 如果要插入的数据比节点的数据大，并且节点的右子树为空，就将新数据直接插入到右子节点的位置。如果不为空，就再遍历右子树，查找插入位置。
  * 如果要插入的数据比节点小，并且节点的左子树为空，就将新数据直接插入到左子节点的位置。如果不为空，就再遍历右子树，查找插入位置。
  * 
- * 3    
+ * 3、二叉查找树的删除
+ * a、如果要删除的节点没有子节点，直接把父节点的指向要删除的节点的指针置为null。
+ * b、如果要删除的节点只有一个子节点，将父节点指向要删除的节点的指针 更改为 指向它的子节点。
+ * c、如果要删除的节点中有两个子节点，需要找到这个节点的 右子树中的最小节点，将它移到到要删除的节点的位置上来。
  * 
  */
-function binaryFind(data,node){
-    let p = node;
-    while(p != null){
-        if(p.data == data) {
-            return p
-        }else if(p.data > data){
-            p = p.right;
-        }else {
-            p = p.left;
-        }
+
+class Node{
+    constructor(data){
+        this.data = data;
+        this.left = null;
+        this.right = null;
     }
-    return null;
 }
 
-function binaryInsert(data,node){
-    let p = node;
-    while( p != null){
-        if(data > p.data){
-            if(p.right == null){
-                p.right = new Node(data);
-                return;
-            }else{
+class BinaryTree{
+    constructor(){
+        this.tree = new Node(0);
+    }
+    binaryFind(data){
+        let p = this.tree;
+        while(p != null){
+            if(p.data == data) {
+                return p;
+            }else if(p.data > data){
                 p = p.right;
+            }else {
+                p = p.left;
             }
-        }else{
-            if(p.left == null){
-                p.left = new Node(data);
-                return;
+        }
+        return null;
+    }
+    
+    binaryInsert(data){
+        let p = this.tree;
+        while( p != null){
+            if(data > p.data){
+                if(p.right == null){
+                    p.right = new Node(data);
+                    return;
+                }else{
+                    p = p.right;
+                }
+            }else{
+                if(p.left == null){
+                    p.left = new Node(data);
+                    return;
+                }else{
+                    p = p.left;
+                }
+            }
+        }
+    }
+    binaryDelete(data){
+        let p = this.tree,pp = null;//pp用来记录节点的父节点
+        while(p != null && p.data != data){
+            pp = p;
+            if(p.data > data){
+                p = p.right;
             }else{
                 p = p.left;
             }
         }
+        if(p == null) return;//没有找到这个节点
+        
+        //找到了要删除的节点，如果他有两个子节点 -> 查找右子树中最小的节点(找到右子树中最左边的叶节点)
+        if(p.left != null &&  p.right != null){
+            let minp = p.right,minpp = p;
+            while(minp.left != null){
+                minpp = minp;
+                minp = minp.left;
+            }
+            //找到了最左边的叶节点 进行迁移哦
+            p.data = minp.data;
+            p = minp;//为了兼容下面的删除操作哦
+            pp = minpp;
+        }
+        let child;
+        if(p.left != null) child = p.left;
+        else if(p.right != null) child = p.right;
+        else  child = null;
+        if(pp == null){this.tree = child}
+        else if(pp.left == p) pp.left = child;
+        else pp.right = child;
     }
 }
+
+
+
