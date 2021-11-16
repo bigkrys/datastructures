@@ -169,16 +169,86 @@ class BinaryTree{
 
 
 /**
- * 红黑树
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
+ * 94. 二叉树的中序遍历 https://leetcode-cn.com/problems/binary-tree-inorder-traversal/
  */
+
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number[]}
+ */
+ var inorderTraversal = function(root) {
+    let result = [],p = root;
+    if(p == null) return [];
+    if(p.left!=null){
+        let leftresult = inorderTraversal(p.left);
+        result = result.concat(leftresult)
+     }
+     result.push(p.val);
+     if(p.right != null){
+        let rightresult =  inorderTraversal(p.right);
+        result = result.concat(rightresult);
+     }
+    return result;
+};
+
+
+/**
+ * 100. 相同的树
+ * https://leetcode-cn.com/problems/same-tree/
+ */
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} p
+ * @param {TreeNode} q
+ * @return {boolean}
+ */
+ var isSameTree = function(p, q) {
+     if(p == null && q == null) return true;
+     if(p == null && q != null) return false;
+     if(p != null && q == null) return false;
+     if(p!= null && q != null){
+         if(p.val != q.val){
+             return false
+         }
+         return isSameTree(p.left,q.left) && isSameTree(p.right,q.right);//左右相等
+     }
+};
+/**
+ * 104. 二叉树的最大深度
+ * https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/
+ */
+ var maxDepth = function(root) {
+    if(root == null) return 0;
+    let left = maxDepth(root.left);
+    let right = maxDepth(root.right);
+    return Math.max(left,right)+1;
+};
+
+/**
+ * 111. 二叉树的最小深度
+https://leetcode-cn.com/problems/minimum-depth-of-binary-tree/
+ */
+var minDepth = function(root) {
+    if(root == null) return 0;
+    let left = maxDepth(root.left);
+    let right = maxDepth(root.right);
+    return Math.min(left,right)+1;
+};
 
 
 
