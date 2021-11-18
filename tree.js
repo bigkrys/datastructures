@@ -245,8 +245,8 @@ https://leetcode-cn.com/problems/minimum-depth-of-binary-tree/
  */
 var minDepth = function(root) {
     if(root == null) return 0;
-    let left = maxDepth(root.left);
-    let right = maxDepth(root.right);
+    let left = minDepth(root.left);
+    let right = minDepth(root.right);
     return Math.min(left,right)+1;
 };
 

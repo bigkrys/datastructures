@@ -2,19 +2,43 @@
 <html>
     <body></body>
     <script>
-        var hasCycle = function(head) {
-            let hash = new Set(),p = head,i = 0;
-            while(p){
-                if(p.val &&  !hash.has(i)){
-                   hash.add(i)
-                }else if(p.val &&  hash.has(i)){
-                    return true
-                }
-                i++;
-                p = p.next;
+         function swap(array,i,j){
+            let temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+        function buildHeap(array){
+            for(let i = Math.round(array.length/2);i>=1;i--){
+                heapify(array,array.length,i)
             }
-            return false;
-        };
-        
+            return array;
+        }
+        function heapify(array,n,i){
+            while(true){
+                let maxPos = i;
+                if(i*2<n && array[i] < array[i*2]){
+                maxPos = i*2;
+                }
+                if((i * 2 + 1)<n && array[maxPos] <array[i*2+1] ){
+                    maxPos = i*2 + 1;
+                }
+                if(maxPos == i) break;
+                swap(array,maxPos,i);
+                i = maxPos;
+
+            }
+        }
+        function HeapSort(array){
+            array =  buildHeap(array);
+            let k = array.length-1;
+            while(k>1){
+                swap(array,1,k);//堆顶元素与最后的叶节点进行交换
+                k--;
+                heapify(array,k,1);//堆化
+            }
+            return array;
+        }
+        console.log(HeapSort([,3,1,9,6,5]))
+
     </script>
 </html>
