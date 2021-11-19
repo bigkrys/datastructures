@@ -2,57 +2,139 @@
 <html>
     <body></body>
     <script>
-  function swap(array,i,j){
-    let temp = array[i];
-    array[i] = array[j];
-    array[j] = temp;
-}
+        class MinHeap{
+            constructor(n){
+                this.maxCount = n+1;
+                this.heap = [0];
+            }
+            heapify(array,n,i){
+                //从上到下堆化 保持父节点比左右子节点都要小
+                //将数组元素从i->n之间的元素进行堆化
+                n = n-1;
+                while(true){
+                    let minPos = i;
+                    if(i*2 <= n && array[i] > array[i*2]){
+                        minPos = i*2;
+                    }
+                    if(i*2+1 <= n && array[minPos] > array[i*2+1]){
+                        minPos = i*2+1;
+                    }
+                    if(minPos == i) break
+                    let temp = array[i];
+                    array[i] = array[minPos];
+                    array[minPos] = temp;
+                    i = minPos;
 
-class MxHeap{
-    constructor(n){
-        this.headArray = new Array(n+1);//用数组进行存储数据，下标1开始
-        this.length = 0;//当前堆中的数据
-        this.maxCount = n;//堆中可以存放最大的数据是多少
-    }
-    insert(data){
-        //往堆里插入一个元素
-        if(this.length >= this.maxCount) {return;}//堆满 不允许插入
-        this.length++;
-        this.headArray[this.length] = data;//插入元素
-        //从下往上堆化
-        let i = this.length;
-        let fatherIndex = Math.floor(i/2);
-        while(fatherIndex > 0 && this.headArray[i] > this.headArray[fatherIndex]){
-            //如果当前节点的值比父节点大，就对两个节点进行交换
-            swap(this.headArray,i,fatherIndex);//交换两个节点的值
-            i = fatherIndex;
-            fatherIndex = Math.floor(i/2);
+                }
+                return array
+
+            }
+            swap(array,i,j){
+                let temp = array[i];
+                array[i] = array[j];
+                array[j] = temp;
+                return array;
+            }
+            add(data){
+                //添加一个元素
+                if(this.heap.length == 1){
+                    //还没有堆顶元素，直接插入
+                    this.heap.push(data);
+                    return
+                }
+                if(this.heap.length < this.maxCount){
+                    //有堆顶元素 ，且堆还没满,插入元素 然后开始堆化
+                    this.heap.push(data);
+                    this.heap = this.heapify(this.heap,this.heap.length,1);
+                    return
+                }
+                if(this.heap.length >= this.maxCount){
+                    //有堆顶元素，且堆已经满了 先与堆顶元素进行对比，如果小于堆顶元素的就不处理，如果大于堆顶元素，把元素放到堆顶，然后进行堆化
+                    if(data>this.heap[1]){
+                        this.heap[1] = data;
+                        this.heap = this.heapify(this.heap,this.heap.length,1);
+                    }
+
+                    return
+                }
+            }
+            peak(){
+                //获得堆顶元素
+                if (this.heap.length>1) {
+                    return this.heap[1];
+                }
+                return null;
+            }
+
         }
-    }
-   
-    removeTop(){
-        if(this.length == 0) {return -1;}//堆顶没有数据
-        this.headArray[1] = this.headArray[this.length];//把堆尾部的叶节点换上去
-        this.headArray[this.length] = null;//删除最后一个节点
-        this.length--;
 
-        //从上往下进行堆化
-        let i = 1;
-        while(true){
-            let maxPos = i;
-            if(i*2 < this.length && this.headArray[i] < this.headArray[i*2]){
+        var KthLargest = function(k, nums) {
+            this.k  = k ;
+            this.nums = nums;
+            this.heap = new MinHeap(k);
+            for(let i = 0;i<nums.length;i++){
+                this.heap.add(nums[i])
+                console.log(nums[i],JSON.parse(JSON.stringify(this.heap)))
+
+            }
+        
+        };
+        KthLargest.prototype.add = function(val) {
+           this.heap.add(val);
+           console.log(val,this.heap)
+           return this.heap.peak();
+        };
+        let array = [
+            5917,-7390,8688,8851,4070,1999,143,-4578,-7571,-1336,4778,-7132,2648,3507,9844,-129,7303,-1681,3351,8782,6505,3912,-1577,8845,]
+        // let k = new KthLargest(20,array);
+        let array2 = [,9,8,7,6,4,3,2,1]
+        // // console.log(k.add(3))
+        // // console.log(k.add(5))
+        // // console.log(k.add(10))
+        // // console.log(k.add(9))
+        // // console.log(k.add(4))
+        // console.log(k)
+        function swap(array,i,j){
+            let temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+            return array;
+        }
+       
+        function buildHeap(array){
+            for(let i = Math.round(array.length/2);i>=1;i--){
+                heapify(array,array.length,i)
+            }
+            return array;
+        }
+        function heapify(array,n,i){
+            while(true){
+                let maxPos = i;
+                if(i*2<n && array[i] < array[i*2]){
                 maxPos = i*2;
-            }
-            if(i*2 + 1 < this.length && this.headArray[maxPos] < this.headArray[i*2 +1]){
-                maxPos = i*2 +1;
-            }
-            if(maxPos == i){ break;}//左右子元素都不大于自己就退出循环
-            swap(this.headArray,i,maxPos);//交换两个节点
-            i = maxPos;//往下继续
-        }
+                }
+                if((i * 2 + 1)<n && array[maxPos] <array[i*2+1] ){
+                    maxPos = i*2 + 1;
+                }
+                if(maxPos == i) break;
+                array = swap(array,maxPos,i);
+                i = maxPos;
 
-    }
-}
+            }
+        }
+        function HeapSort(array){
+            array.unshift(0);
+            array =  buildHeap(array);
+            let k = array.length-1;
+            while(k>1){
+                array = swap(array,1,k);//堆顶元素与最后的叶节点进行交换
+                k--;
+                heapify(array,k,1);//堆化
+            }
+            array = array.slice(0)
+            return array;
+        }
+        console.log(HeapSort(array2))
    
 
     </script>
