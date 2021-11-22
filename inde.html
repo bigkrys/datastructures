@@ -2,85 +2,38 @@
 <html>
     <body></body>
     <script>
-      /**
-     * @param {number[]} nums
-     * @return {number}
-     */
-     var maxProduct = function(nums) {
-    let m = new MaxHeap(nums.length-1);
-    for(let i = 0;i<nums.length;i++){
-        m.add(nums[i]);
-    }
-    let first = m.heap[1];
-    m.removeTop()
-    let two = m.heap[1];
-    console.log(first,two)
-    return (first-1)*(two-1)
+       function Node(value) {
+            this.value = value;
+            this.left = null;
+            this.right = null;
+        }
 
-};
-class MaxHeap{
-    constructor(n){
-        this.maxCount = n+1;
-        this.heap = [0];
-    }
-    heapify(array,n,i){
-        //从上到下堆化 保持父节点比左右子节点都要大
-        //将数组元素从i->n之间的元素进行堆化
-        n = n-1;
-        while(true){
-            let minPos = i;
-            if(i*2 <= n && array[i] < array[i*2]){
-                minPos = i*2;
+        var nodeA = new Node("a");
+        var nodeB = new Node("b");
+        var nodeC = new Node("c");
+        var nodeD = new Node("d");
+        var nodeE = new Node("e");
+        var nodeF = new Node("f");
+        var nodeG = new Node("g");
+
+        nodeA.left = nodeB;
+        nodeA.right = nodeC;
+        nodeB.left = nodeD;
+        nodeB.right = nodeE;
+        nodeC.left = nodeF;
+        nodeC.right = nodeG;
+        function BFS(node){
+            if(node == null) return nul;
+            let quene = [],result = [];
+            quene.push(node);
+            while(quene.length>0){
+                let root = quene.shift()//取队首元素
+                result.push(root.value);
+                if(root.left){quene.push(root.left)}
+                if(root.right){quene.push(root.right)}
             }
-            if(i*2+1 <= n && array[minPos] < array[i*2+1]){
-                minPos = i*2+1;
-            }
-            
-            if(minPos == i) break
-            array = this.swap(array,i,minPos)
-            i = minPos;
-
+            return result;
         }
-        return array
-
-    }
-    swap(array,i,j){
-        let temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-        return array;
-    }
-    add(data){
-        //添加一个元素
-        this.heap.push(data);
-         //从下往上堆化
-        let i = this.heap.length-1;
-        let fatherIndex = Math.floor(i/2);
-        while(fatherIndex > 0 && this.heap[i] > this.heap[fatherIndex]){
-            //如果当前节点的值比父节点大，就对两个节点进行交换
-            this.heap = this.swap(this.heap,i,fatherIndex)//交换两个节点的值
-            i = fatherIndex;
-            fatherIndex = Math.floor(i/2);
-        }
-    }
-    removeTop(){
-        //删除一个元素 从上往下堆化
-        this.heap.shift()
-        this.heap[0] = 0
-        this.heap = this.heapify(this.heap,this.heap.length,1);
-    }
-    peak(){
-        //获得堆顶元素
-        if (this.heap.length>1) {
-            return this.heap[1];
-        }
-        return null;
-    }
-
-}
-
-console.log(maxProduct([3,4,5,2]))
-   
-
+        console.log('resu',BFS(nodeA,'1f'))
     </script>
 </html>

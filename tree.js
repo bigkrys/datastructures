@@ -252,3 +252,90 @@ var minDepth = function(root) {
 
 
 
+/**
+ * 二叉树的深度优先搜索（就是二叉树的前序遍历）
+ * 从根节点触发，沿着左子树方向进行纵向遍历，直到找到叶节点为止。
+ * 然后回溯到前一个节点，进行右子树节点的遍历，知道遍历完所有可达到节点。
+ * 
+ *       17     
+ *   16     13  
+ * 5   6   7   8    
+ * 像上面这样的二叉树，深度优先遍历输出就是
+ * 
+ * 17 16 5 6 13 7 8
+ *      
+ */
+
+ function treeDFS(node){
+    console.log(node.value);
+    if(node.left){
+        treeDFS(node.left);
+    }
+    if(node.right){
+        treeDFS(node.right);
+    }
+    return
+}
+function treeDFS(node,data){
+    if(node == null) return false;
+    if(node.value == data){
+        return true
+    }
+    let left = treeDFS(node.left,data);
+    let right = treeDFS(node.right,data);
+    return left || right
+}
+
+
+/**
+ * 广度优先搜索
+ * 从根节点开始，一层一层的输出
+ *       17     
+ *   16     13  
+ * 5   6   7   8    
+ * 
+ * 输出：17 16 13 5 6 7 8
+ * 拿一个队列来记录：首先将元素push进队列，不断的判断队列中是否还有元素。如果有，证明还没有遍历完树。
+ * 然后将左右子树push进队列。此时每次循环都是 先把当前节点出队，然后将左右子节点push进队列中。
+ */
+
+ function treeBFS(node){
+    if(node == null) return nul;
+    let quene = [],result = [];
+    quene.push(node);
+    while(quene.length>0){
+        let root = quene.shift()//取队首元素
+        result.push(root.value);
+        if(root.left){quene.push(root.left)}
+        if(root.right){quene.push(root.right)}
+    }
+    return result;
+}
+
+/**
+ * 102. 二叉树的层序遍历
+ * https://leetcode-cn.com/problems/binary-tree-level-order-traversal/
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number[][]}
+ */
+ var levelOrder = function(root) {
+     if(root == null) return [];
+     let q = [],result = [];
+     q.push(root)
+     while(q.length >0){
+        let currentSize = q.length;//当前层的长度
+        result.push([]);//先构造一个空的数组
+        for(let i = 1;i <= currentSize;i++){
+            //把属于当前层的节点取出来,再将它们的左右子节点push进队列
+            let node = q.shift();
+            result[result.length-1].push(node.val);
+            if(node.left){q.push(node.left)}
+            if(node.right){q.push(node.right)}
+        }
+       
+     }
+     return result;
+};
+
