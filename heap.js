@@ -6,6 +6,7 @@
  * 
  * 
  * 1、往堆里插入一个元素（大顶堆）
+ * 记住！二叉树插入都是在叶节点插入！也就是在数组末端插入
  * 当将新插入的元素放到堆的最后的时候，因为有可能不符合堆的特性，需要对堆进行调整，也叫作堆化。
  * 
  * 堆化实际上有两种：从上往下和从下往上、
@@ -131,22 +132,139 @@ class Heap{
 
 
 class MaxHeap{
-    //大顶堆
+    constructor(n){
+        this.maxCount = n+1;
+        this.heap = [0];
+    }
+    heapify(array,n,i,data){
+        //从上到下堆化 保持父节点比左右子节点都要大
+        //将数组元素从i->n之间的元素进行堆化
+        n = n-1;
+        while(true){
+            let minPos = i;
+            if(i*2 <= n && array[i] < array[i*2]){
+                minPos = i*2;
+            }
+            if(i*2+1 <= n && array[minPos] < array[i*2+1]){
+                minPos = i*2+1;
+            }
+            
+            if(minPos == i) break
+            array = this.swap(array,i,minPos)
+            i = minPos;
+
+        }
+        return array
+
+    }
+    swap(array,i,j){
+        let temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+        return array;
+    }
+    add(data){
+        //添加一个元素
+        this.heap.push(data);
+         //从下往上堆化
+        let i = this.heap.length-1;
+        let fatherIndex = Math.floor(i/2);
+        while(fatherIndex > 0 && this.heap[i] > this.heap[fatherIndex]){
+            //如果当前节点的值比父节点大，就对两个节点进行交换
+            this.heap = this.swap(this.heap,i,fatherIndex)//交换两个节点的值
+            i = fatherIndex;
+            fatherIndex = Math.floor(i/2);
+        }
+    }
+    removeTop(){
+        //删除一个元素 从上往下堆化
+        this.heap.shift()
+        this.heap[0] = 0
+        this.heap = this.heapify(this.heap,this.heap.length,1);
+    }
+    peak(){
+        //获得堆顶元素
+        if (this.heap.length>1) {
+            return this.heap[1];
+        }
+        return null;
+    }
+
 }
 
 class MinHeap{
-    //小顶堆
     constructor(n){
-        this.headArray = new Array(n+1);
-        this.maxCount = n;
-        this.length = 0;
+        this.maxCount = n+1;
+        this.heap = [0];
     }
-    add(data){
-        //往堆中插入数据
-    }
-    removeTop(){
+    heapify(array,n,i,data){
+        //从上到下堆化 保持父节点比左右子节点都要小
+        //将数组元素从i->n之间的元素进行堆化
+        n = n-1;
+        while(true){
+            let minPos = i;
+            if(i*2 <= n && array[i] > array[i*2]){
+                minPos = i*2;
+            }
+            if(i*2+1 <= n && array[minPos] > array[i*2+1]){
+                minPos = i*2+1;
+            }
+            
+            if(minPos == i) break
+            array = this.swap(array,i,minPos)
+            i = minPos;
+
+        }
+        return array
 
     }
+    swap(array,i,j){
+        let temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+        return array;
+    }
+    add(data){
+        //添加一个元素
+        this.heap.push(data);
+         //从下往上堆化
+        let i = this.heap.length-1;
+        let fatherIndex = Math.floor(i/2);
+        while(fatherIndex > 0 && this.heap[i] < this.heap[fatherIndex]){
+            //如果当前节点的值比父节点大，就对两个节点进行交换
+            this.heap = this.swap(this.heap,i,fatherIndex)//交换两个节点的值
+            i = fatherIndex;
+            fatherIndex = Math.floor(i/2);
+        }
+    }
+    removeTop(){
+        //删除一个元素 从上往下堆化
+        this.heap.shift()
+        this.heap[0] = 0
+        this.heap = this.heapify(this.heap,this.heap.length,1);
+    }
+    insert(data){
+        //维护一个k大小的插入
+        if(this.heap.length >= this.maxCount){
+            //插入后发现数据超出k
+            if(data > this.heap[1]){
+                this.heap[1] = data;
+                this.heap = this.heapify(this.heap,this.maxCount,1);
+            }
+            
+        }else{
+            this.add(data);//从数组尾部插入数据
+
+        }
+    }
+    peak(){
+        //获得堆顶元素
+        if (this.heap.length>1) {
+            return this.heap[1];
+        }
+        return null;
+    }
+
 }
 
 
@@ -293,39 +411,116 @@ function HeapSort(array){
  * 剑指 Offer II 059. 数据流的第 K 大数值
  * https://leetcode-cn.com/problems/jBjn9C/
  * 
- * 1、建堆 小顶堆，且堆的大小为k
- * 2
+ * 1、建堆 小顶堆，且堆的大小为k 需要注意的是 入堆的数据必须在叶节点中插入
+ * 2、堆没满的时候，从叶节点中插入，并且从下往上开始堆化；
+ * 3、当堆满的时候，判断是否比堆头的数据大，如果是就替换堆头的数据，然后从上往下进行堆化
  * 
  */
- function buildHeap(k,nums){
-    let heap = nums.slice(0,k+1);
-    heap = heapify(heap,k+1,1);
-    if(k<nums.length){
-        for(let i = k+1;i<nums.length;i++){
-            if(nums[i] > heap[1]){
-                heap[1] = nums[i];
-                heap = heapify(heap,k+1,1);
+ class MinHeap{
+    constructor(n){
+        this.maxCount = n+1;
+        this.heap = [0];
+    }
+    heapify(array,n,i,data){
+        //从上到下堆化 保持父节点比左右子节点都要小
+        //将数组元素从i->n之间的元素进行堆化
+        n = n-1;
+        while(true){
+            let minPos = i;
+            if(i*2 <= n && array[i] > array[i*2]){
+                minPos = i*2;
             }
-        }
-    }
-    return heap;
+            if(i*2+1 <= n && array[minPos] > array[i*2+1]){
+                minPos = i*2+1;
+            }
+            
+            if(minPos == i) break
+            array = this.swap(array,i,minPos)
+            i = minPos;
 
-}
-function heapify(array,n,i){
-    while(true){
-        let maxPos = i;
-        if(i*2<n && array[i] > array[i*2]){
-            maxPos = i*2;
         }
-        if((i*2+1) < n && array[maxPos] > array[i*2+1]){
-            maxPos = i*2+1;
-        }
-        if(maxPos == i) break;
+        return array
+
+    }
+    swap(array,i,j){
         let temp = array[i];
-        array[i] = array[maxPos];
-        array[maxPos] = temp;
-        i = maxPos;
+        array[i] = array[j];
+        array[j] = temp;
+        return array;
     }
-    return array;
+    add(data){
+        //添加一个元素
+        this.heap.push(data);
+         //从下往上堆化
+        let i = this.heap.length-1;
+        let fatherIndex = Math.floor(i/2);
+        while(fatherIndex > 0 && this.heap[i] < this.heap[fatherIndex]){
+            //如果当前节点的值比父节点大，就对两个节点进行交换
+            this.heap = this.swap(this.heap,i,fatherIndex)//交换两个节点的值
+            i = fatherIndex;
+            fatherIndex = Math.floor(i/2);
+        }
+    }
+    insert(data){
+        if(this.heap.length >= this.maxCount){
+            //插入后发现数据超出k
+            if(data > this.heap[1]){
+                this.heap[1] = data;
+                this.heap = this.heapify(this.heap,this.maxCount,1);
+            }
+            
+        }else{
+            this.add(data);//从数组尾部插入数据
+
+        }
+    }
+    peak(){
+        //获得堆顶元素
+        if (this.heap.length>1) {
+            return this.heap[1];
+        }
+        return null;
+    }
 
 }
+
+var KthLargest = function(k, nums) {
+    this.k  = k+1 ;
+    this.nums = nums;
+    this.heap = new MinHeap(k);
+    for(let i = 0;i<nums.length;i++){
+        this.heap.insert(nums[i])
+    }
+
+};
+KthLargest.prototype.add = function(val) {
+    this.heap.insert(val);
+    this.nums.push(val);
+   return this.heap.peak();
+};
+
+
+/**
+ * 1464. 数组中两元素的最大乘积
+ * https://leetcode-cn.com/problems/maximum-product-of-two-elements-in-an-array/
+ * 
+ * 或者 建立大顶堆 堆顶元素线程
+ */
+ var maxProduct = function(nums) {
+    let result = nums.sort((a,b)=>a-b);
+    return (result[result.length-2]-1) * (result[result.length-1]-1)
+};
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+ var maxProduct = function(nums) {
+    let m = new MaxHeap(nums.length-1);
+    for(let i = 0;i<nums.length;i++){
+        m.add(nums[i]);
+    }
+    let first = m.heap[1];
+    m.removeTop()
+    let two = m.heap[1];
+    return (first-1)*(two-1);
+};
