@@ -339,3 +339,115 @@ function treeDFS(node,data){
      return result;
 };
 
+
+
+/**]
+ * LCP 44. 开幕式焰火
+ * https://leetcode-cn.com/problems/sZ59z6/
+ */
+
+var numColor = function(root) {
+    let set = new Set()
+    treeDFS(root,set);
+    return set.size
+  };
+   function treeDFS(node,set){
+       if(node.val){
+           set.add(node.val);
+       }
+      if(node.left){
+          treeDFS(node.left,set);
+      }
+      if(node.right){
+          treeDFS(node.right,set);
+      }
+      return
+  }
+
+  /**
+   * 144. 二叉树的前序遍历
+   * https://leetcode-cn.com/problems/binary-tree-preorder-traversal/
+   */
+  /**
+ * @param {TreeNode} root
+ * @return {number[]}
+ */
+var preorderTraversal = function(root) {
+    if(root == null) return [];
+    let result = [];
+    preorder(root,result);
+    return result;
+   
+    
+};
+var preorder = function(root,result){
+    if(root){
+        if(root.val) result.push(root.val);
+        if(root.left) preorder(root.left,result);
+        if(root.right) preorder(root.right,result);
+    }
+}
+
+//解答二
+var preorderTraversal = function(root) {
+    if(root == null) return [];
+    let visited = [],result = [];
+    visited.push(root)
+    while(visited.length>0){
+        let currentNode = visited.pop()
+        result.push(currentNode.val)
+        if(currentNode.right) visited.push(currentNode.right);
+        if(currentNode.left) visited.push(currentNode.left);
+    }
+    return result;
+        
+};
+
+/**
+ * 145. 二叉树的后序遍历
+ * https://leetcode-cn.com/problems/binary-tree-postorder-traversal/
+ */
+ var postorderTraversal = function(root) {
+    if(root == null) return [];
+   let visited = [],result = [];
+   postorder(root,result)
+   return result;
+                                                              
+
+};
+var postorder = function(root,result){
+   if(root){
+       if(root.left) postorder(root.left,result);
+       if(root.right) postorder(root.right,result);
+       if(root.val) result.push(root.val);
+   }
+}
+//解答二 利用前序改顺序 然后翻转
+var postorderTraversal = function(root) {
+    if(root == null) return [];
+    let visited = [],result = [];
+    visited.push(root)
+    while(visited.length>0){
+        let currentNode = visited.pop()
+        result.push(currentNode.val)
+        if(currentNode.left) visited.push(currentNode.left);
+        if(currentNode.right) visited.push(currentNode.right);
+
+    }
+    return result.reverse();
+                                                               
+
+};
+
+/**
+ * 226. 翻转二叉树
+ * https://leetcode-cn.com/problems/invert-binary-tree/
+ */
+ var invertTree = function(root) {
+   if(root == null) return null;
+   let left =  invertTree(root.left);
+   let right = invertTree(root.right);
+   root.left = right;
+   root.right = left;
+   return root;
+};
