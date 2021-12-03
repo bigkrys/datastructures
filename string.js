@@ -541,9 +541,23 @@ function BM(string,target){
  * next[4] =  2
  * next[5] = -1
  * 
+ * 那么先假设我们已经拥有了这个next数组，kmp算法怎么实现？
  * 
- * 这个步骤怎么实现呢？思考一下
+ *
+ * 
 */
+function getNextArray(){
+    return []
+}
+
+function KMP(string,target){
+    let next = getNextArray(target);
+    let j = 0,i=0;//j是当前模式串的位置,i是主串当前位置
+    for(;i<string.length;i++){
+        
+    }
+
+}
 
 
 
