@@ -533,7 +533,7 @@ function BM(string,target){
  * 
  * 
  * 这样能看懂吗？
- * 我们构造一个这样的方法
+ * 我们构造一个这样的数组，数组下标是好前缀最后一位的下标，对应的值是最长可匹配的后缀子串对应的最后一位的下标
  * next[0] = -1
  * next[1] = -1
  * next[2] =  0
@@ -541,25 +541,150 @@ function BM(string,target){
  * next[4] =  2
  * next[5] = -1
  * 
- * 那么先假设我们已经拥有了这个next数组，kmp算法怎么实现？
  * 
+ * 
+ * 那么怎么来实现这个数组呢
+ * 从上面这个我们看到一个规律：
+ * aba 的最长后缀 a =0
+ * abab 的最长后缀 ab = 1
+ * ababa 最长后缀  aba = 2
+ * 也就是说 当我找到一个next[i-1] ，他对应的值是k-1,
+ * 那么，如果target[i] == target[k] ，也就是下个字符前后都相等，next[i] = k
+ * 
+ * 那如果不等的时候怎么办呢？
+ * 假设target[0,i]的最长可以匹配的后缀子串是target[r,i],如果我们把最后一个字符去掉，那么
+ * target[r,i-1]肯定是target[0,i-1]的可匹配后缀子串（因为前面已经匹配好了）,但不一定是最长可匹配后缀子串。
+ * 
+ * 所以，既然next[0,i-1] = k-1,也就是说 target[0 ~ i-1] == target[0~k],
+ * 虽然她们的下一位target[i] != target[k]，
+ * 那么我们可以看一下,target[x,i-1]对应的可以匹配的前缀子串target[0,i-1-x]的下一个字符target[i-x] 是否等于target[i]，
+ * 如果相等 那么target[x,i]就是target[0,i]的最长可匹配的后缀子串.这么说你可能有点乱，我们来推到一下
+ *  
+ *  0     i-x-1 i-x  x                  i-1   i
+ *  ***********  *    *********************   *
+ * 
+ * target[0,i-x-1] 对应的最长可匹配后缀子串是 target[x,i-1]，
+ * 他们的下一个字符是target[i-x] ,判断是否等于target[i]
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ *
+ * 从好前缀的后缀子串u中，查找到最长的可匹配的前缀子串v，假设v的长度是k，那么模式串一次性往后滑动j-k位。
+ * 那么此时j = j-k。
  *
  * 
 */
-function getNextArray(){
-    return []
+
+
+function getNextArray(target){
+    let m = target.length;
+    let next = new Array(m);
+    next[0] = -1;
+    let k = -1;
+    for(let i = 1;i<m;i++){
+        while(k != -1 && target[k+1] != target[i]){
+            k = next[k];
+        }
+        if(target[k+1] == target[i]){
+            k++;
+        }
+        next[i] = k;
+    }
+
+    return next;
 }
 
 function KMP(string,target){
     let next = getNextArray(target);
     let j = 0,i=0;//j是当前模式串的位置,i是主串当前位置
     for(;i<string.length;i++){
-        
+       while(j>0 && string[i] != target[j]){
+           //如果不匹配，就去next数组中拿到移动的次数，一次性往后移动
+           //此时next数组的下标是 好前缀的最后一位的下标 也就是j-1(好前缀的后缀子串从j-1开始)
+           //+1是长度，不是数组下标，
+           j = next[j-1] + 1;
+       }
+       if(string[i] == target[j]){
+           //如果相等 就往后匹配
+           j++;
+       }
+
+        if(j == target.length){
+            return i-(target.length)+1;
+        }
     }
+    return -1;
 
 }
 
 
+
+
+
+/**
+ * Trie 树
+ * 首先 什么是trie树？
+ * trie树的本质，就是利用字符串之间的公共前缀，将重复的前缀合在一起。
+ * 比如我们有how hi her hello krys ke这6个字符串，trie树就是下面这样
+ * 
+ *                      /
+ *           h                   k
+ *     e     i.   o             r e.
+ *    l  r.        w.          y
+ *  l                        s.
+ * 0. 
+ * 
+ * 从根节点到红色节点的一个路径代表一个字符（图中有一个.）
+ * 
+ * 怎么存储这个trie树呢，因为他是一个多叉树。
+ * 我们用散列表来存储，每个散列表有26个字符，其指向的是下一个字符的散列表的位置。
+ * 
+ */
+ class TrieNode{
+    constructor(data){
+        this.data = data;
+        this.children = new Array(26);//散列表是一个数组，每个数组元素就是一个trieNode节点。
+        this.isEndingChar = false;//用来标志是否为红节点。
+    }
+}
+class Trie{
+    constructor(){
+        this.root = new TrieNode('/');//根节点
+    }
+    insert(text){
+        //在trie树中插入一个字符串
+        let p = this.root,a = 'a';
+        for(let i=0;i<text.length;i++){
+            let index = text[i].charCodeAt() - a.charCodeAt();
+            if(p.children[index] == null){
+                //没有这个子字符串
+                let newnode = new TrieNode(text[i]);
+                p.children[index] = newnode;
+            }
+            p = p.children[index];
+        }
+        p.isEndingChar = true;
+    }
+    find(pattern){
+        //在trie树中查找一个字符串
+        let p = this.root,a = 'a';
+        for(let i = 0;i<pattern.length;i++){
+            let index = pattern[i].charCodeAt() - a.charCodeAt();
+            if(p.children[index] == null){
+                return false;
+            }
+            p = p.children[index];
+        }
+        if(!p.isEndingChar) return false;//只是一部分字符
+        else return true;
+
+    }
+}
 
 
 

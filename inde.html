@@ -2,106 +2,56 @@
 <html>
     <body></body>
     <script>
-var stringMatching = function(words) {
-    let result = new Set();
-    for(let i = 0;i<words.length;i++){
-        let j = i+1,n = words[i].length;
-        for(;j<words.length;j++){
-            let m = words[j].length;
-            if(Math.max(m,n) == n){
-
-                if(BM(words[i],words[j]) > -1){
-                    result.add(words[j]);
-                }
-            }else{
-                if(BM(words[j],words[i]) > -1){
-                    result.add(words[i]);
-                }
+class TrieNode{
+    constructor(data){
+        this.data = data;
+        this.children = new Array(26);//散列表是一个数组，每个数组元素就是一个trieNode节点。
+        this.isEndingChar = false;//用来标志是否为红节点。
+    }
+}
+class Trie{
+    constructor(){
+        this.root = new TrieNode('/');//根节点
+    }
+    insert(text){
+        //在trie树中插入一个字符串
+        let p = this.root,a = 'a';
+        for(let i=0;i<text.length;i++){
+            let index = text[i].charCodeAt() - a.charCodeAt();
+            if(p.children[index] == null){
+                //没有这个子字符串
+                let newnode = new TrieNode(text[i]);
+                p.children[index] = newnode;
             }
-            
+            p = p.children[index];
         }
+        p.isEndingChar = true;
     }
-    return Array.from(result);
-
-};
-function generateHashBC(target){
-    //根据模式串的字符 生成一个哈希值的散列表，这样就可以在有坏字符的时候 迅速判断前面是否有匹配的坏字符
-    //散列表下标对应 字符的ascll骂
-    let hashArray = new Array(256).fill(-1);
-    for(let i=0;i<target.length;i++){
-        let code = target[i].charCodeAt();
-        hashArray[code] = i;
-    }
-    return hashArray;
-}
-function generateSP(target){
-    //根据模式串生成一个 装着对应好后缀长度中 模式串前面匹配的子串下标suffix，还有一个对应的后缀子串是否有前缀子串匹配
-    let suffix = new Array(target.length).fill(-1);
-    let prefix = new Array(target.length).fill(false);
-
-    for(let i = 0;i<target.length-1;i++){
-        //这里要记住！！！！ i必须要是模式串的子串 不能完全等于 所以i<target.length-1
-        let j=i;k=0;
-        while(j>=0 && target[j] == target[target.length - 1- k]){
-            j--;
-            k++;
-            suffix[k] = j+1;//这里也要小心，suffix[k]对应的是j的下标，因为走动的是j而不是i
-        }
-        if(j == -1){
-            prefix[k] = true
-        }
-    }
-    return {
-        suffix,
-        prefix,
-    }
-}
-function goodSuffix(j,m,suffix,prefix){
-    //根据好后缀两个规则来判断应该移动几位
-    let k = m-1-j;//好后缀的长度
-    if(suffix[k]>-1) return j-(suffix[k])+1;
-    for(r = j+2;r<m;r++){
-        if(prefix[m-r]) return r;
-    }
-    return m;//如果都不匹配 直接移动整个模式串的长度
-}
-function BM(string,target){
-    let hashArray = generateHashBC(target);//先生成一个哈希散列表
-    let {suffix,prefix} = generateSP(target);//生成suffix，prefix数组
-    let n = string.length,m = target.length,i=0;
-    //首先按照坏字符规则从后往前匹配字符
-    while(i <= n-m){
-        let j;
-        for(j = m-1;j>=0;j--){
-            if(target[j] != string[i+j]){
-                break;
+    find(pattern){
+        //在trie树中查找一个字符串
+        let p = this.root,a = 'a';
+        for(let i = 0;i<pattern.length;i++){
+            let index = pattern[i].charCodeAt() - a.charCodeAt();
+            if(p.children[index] == null){
+                return false;
             }
-        }
-        if(j<0){
-            return i;//找到了
-        }
+            p = p.children[index];
 
-        let badIndex = j - hashArray[string[i+j].charCodeAt()];//这里也要非常小心 获取到的是string[i+j]的
-        let goodIndex = 0;
-        if(j<m-1){
-            goodIndex =  goodSuffix(j,m,suffix,prefix)
         }
-        i = i + Math.max(badIndex,goodIndex);
+        if(!p.isEndingChar) return false;//只是一部分字符
+        else return true;
 
     }
-    return -1;
 }
-console.log(BM('djgaissss','jgaiss'))
-console.log(stringMatching(["mass","as","hero","superhero"]))
-console.log(stringMatching(["leetcode","et","code"]))
-console.log(stringMatching(["blue","green","bu"]))
-console.log(stringMatching(["wghqreqmx","wghqreqmxll","saoyq","wghqreqmxj","zusxu","wghqreqmxjxi","tuyvalsotw","jwghqreqmxuj","jynsx","saoyqw","rloxu","bkzusxumu","uhqbpfwkx","gsaoyqwc","upbwnvmx","tmwghqreqmxll","jcmvqo","tmwghqreqmxllq","wsebzkjc","nwsebzkjcx","pziuf","mjynsxot","xgyxmcf","zusxuto","jgaiss","djgaissss","brgohvuehi","upbwnvmxug","qkofc","jdwghqreqmxllje"]
-))
 
+    let t = new Trie();
+    t.insert('hello');
+    t.insert('how');
+    t.insert('hi');
+    t.insert('her');
+    t.insert('krys');
+    console.log(t)
+    console.log(t.find('herr'))
 
-
-// console.log(isPrefixOfWord( "hellohello hellohellohello","ell"))
-
-    // console.log(isPrefixOfWord( "hellohello hellohellohello","ell"))
     </script>
 </html>
