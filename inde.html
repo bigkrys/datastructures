@@ -2,56 +2,50 @@
 <html>
     <body></body>
     <script>
-class TrieNode{
-    constructor(data){
-        this.data = data;
-        this.children = new Array(26);//散列表是一个数组，每个数组元素就是一个trieNode节点。
-        this.isEndingChar = false;//用来标志是否为红节点。
-    }
-}
-class Trie{
-    constructor(){
-        this.root = new TrieNode('/');//根节点
-    }
-    insert(text){
-        //在trie树中插入一个字符串
-        let p = this.root,a = 'a';
-        for(let i=0;i<text.length;i++){
-            let index = text[i].charCodeAt() - a.charCodeAt();
-            if(p.children[index] == null){
-                //没有这个子字符串
-                let newnode = new TrieNode(text[i]);
-                p.children[index] = newnode;
-            }
-            p = p.children[index];
-        }
-        p.isEndingChar = true;
-    }
-    find(pattern){
-        //在trie树中查找一个字符串
-        let p = this.root,a = 'a';
-        for(let i = 0;i<pattern.length;i++){
-            let index = pattern[i].charCodeAt() - a.charCodeAt();
-            if(p.children[index] == null){
-                return false;
-            }
-            p = p.children[index];
-
-        }
-        if(!p.isEndingChar) return false;//只是一部分字符
-        else return true;
-
+class HuffmanNode{
+    constructor(data,weight){
+        this.data = data;//节点字符
+        this.weight = weight;//节点权重
+        this.left = null;//左子树
+        this.right = null;//右子树
     }
 }
 
-    let t = new Trie();
-    t.insert('hello');
-    t.insert('how');
-    t.insert('hi');
-    t.insert('her');
-    t.insert('krys');
-    console.log(t)
-    console.log(t.find('herr'))
-
+ class Huffman {
+     constructor(array){
+         //构建哈夫曼树
+         let Nodes = [];
+        for(let i = 0;i<array.length;i++){
+            let node = new HuffmanNode(array[i].data,array[i].weight);
+            Nodes.push(node);
+        }
+        let sortArray = Nodes.sort((a,b)=>a.weight - b.weight);//根据权重大小排序
+        while(sortArray.length>1){
+            let node1 = sortArray.shift();
+            let node2 = sortArray.shift();
+            let newnode = new HuffmanNode('X',node1.weight+node2.weight);
+            newnode.left = node1;
+            newnode.right = node2;
+            sortArray.push(newnode);
+            sortArray = sortArray.sort((a,b)=>a.weight - b.weight);
+        }
+        this.HuffmanTree = sortArray;
+     }
+     getCode(){
+         //根据哈夫曼树生成字符编码
+        let p = this.HuffmanTree;
+        let result = [],
+        
+     }
+}
+let f = [
+    {data:'a',weight:5},
+    {data:'b',weight:4},
+    {data:'c',weight:3},
+    {data:'d',weight:2},
+    {data:'e',weight:1},
+]
+let nf = new Huffman(f)
+console.log(nf)
     </script>
 </html>
