@@ -82,7 +82,75 @@ console.log(getArray(array))
  *  接着集合变成{9,6} 继续构成树
  *                15
  *          6            9
- *     3       3      4      5
- *           1    2
+ *     3.       3      4.     5.
+ *           1.    2.
  * 
+ * 
+ * 其中左边为0，右边为1
+ * E1 -> 010
+ * D2 -> 011
+ * C3 -> 00
+ * B4 -> 10
+ * A5 -> 11 
  */
+
+ class HuffmanNode{
+    constructor(data,weight){
+        this.data = data;//节点字符
+        this.weight = weight;//节点权重
+        this.left = null;//左子树
+        this.right = null;//右子树
+    }
+}
+
+ class Huffman {
+     constructor(array){
+         //构建哈夫曼树
+         let Nodes = [];
+        for(let i = 0;i<array.length;i++){
+            let node = new HuffmanNode(array[i].data,array[i].weight);
+            Nodes.push(node);
+        }
+        let sortArray = Nodes.sort((a,b)=>a.weight - b.weight);//根据权重大小排序
+        while(sortArray.length>1){
+            let node1 = sortArray.shift();
+            let node2 = sortArray.shift();
+            let newnode = new HuffmanNode('X',node1.weight+node2.weight);
+            newnode.left = node1;
+            newnode.right = node2;
+            sortArray.push(newnode);
+            sortArray = sortArray.sort((a,b)=>a.weight - b.weight);
+        }
+        this.HuffmanTree = sortArray;
+     }
+     getCodes(){
+        let huffmanCodes = [],string = [];
+        function getCode(node,code,string){
+            //根据哈夫曼树生成字符编码
+            let string2 = [...string];
+            string2.push(code);
+            if(node != null){
+                if(node.data == 'X'){
+                    if(node.left != null) getCode(node.left,'0',string2);
+                    if(node.right != null) getCode(node.right,'1',string2);
+                }else{
+                    huffmanCodes[node.data] = string2.join('')
+                }
+            }
+        }
+        getCode(this.HuffmanTree[0],'',string);
+        return huffmanCodes
+     }
+   
+}
+let f = [
+    {data:'a',weight:5},
+    {data:'b',weight:4},
+    {data:'c',weight:3},
+    {data:'d',weight:2},
+    {data:'e',weight:1},
+]
+let nf = new Huffman(f)
+console.log(nf)
+console.log(nf.getCodes())
+

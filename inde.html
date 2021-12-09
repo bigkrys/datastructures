@@ -2,50 +2,59 @@
 <html>
     <body></body>
     <script>
-class HuffmanNode{
-    constructor(data,weight){
-        this.data = data;//节点字符
-        this.weight = weight;//节点权重
-        this.left = null;//左子树
-        this.right = null;//右子树
+let count = 0;
+_8Quene()
+function _8Quene(){
+    let result = new Array(8);//下标是行，值是第几列存放
+    setQuene(0,result);
+}
+function setQuene(row,result){
+    //在第row行放下棋子
+    if(row == 8){
+        //8个棋子都放慢了
+        printQune(result);
+        return
+    }
+    for(let column = 0;column<8;column++){
+        if(isCantSet(row,column,result)){
+            result[row] = column;
+            setQuene(row+1,result);
+        }
     }
 }
-
- class Huffman {
-     constructor(array){
-         //构建哈夫曼树
-         let Nodes = [];
-        for(let i = 0;i<array.length;i++){
-            let node = new HuffmanNode(array[i].data,array[i].weight);
-            Nodes.push(node);
+function isCantSet(row,column,result){
+    //判断在row行column列放置棋子是否合适
+    let leftup = column -1,rightup = row + 1;
+    for(let i = row -1;i>=0;i--){
+        if(result[i] == column){return false;}//先判断当前行是否有棋子放在 想放置位置的列上
+        if(leftup>=0){//判断左上角
+             if(result[i] == leftup){return false;}
+             leftup--;
         }
-        let sortArray = Nodes.sort((a,b)=>a.weight - b.weight);//根据权重大小排序
-        while(sortArray.length>1){
-            let node1 = sortArray.shift();
-            let node2 = sortArray.shift();
-            let newnode = new HuffmanNode('X',node1.weight+node2.weight);
-            newnode.left = node1;
-            newnode.right = node2;
-            sortArray.push(newnode);
-            sortArray = sortArray.sort((a,b)=>a.weight - b.weight);
+        if(rightup<8){
+            //判断右下角
+            if(result[i] == rightup) {return false;}
+            rightup ++;
         }
-        this.HuffmanTree = sortArray;
-     }
-     getCode(){
-         //根据哈夫曼树生成字符编码
-        let p = this.HuffmanTree;
-        let result = [],
-        
-     }
+    }
+    return true;
 }
-let f = [
-    {data:'a',weight:5},
-    {data:'b',weight:4},
-    {data:'c',weight:3},
-    {data:'d',weight:2},
-    {data:'e',weight:1},
-]
-let nf = new Huffman(f)
-console.log(nf)
+
+function printQune(result){
+    count++;
+    let string = ''
+    for(let row = 0;row < 8;row++){
+        for(let column = 0;column<8;column++){
+            if(result[row] == column){
+                string+='Q'
+            }else{
+                string+='*'
+            }
+        }
+        string+='\n'
+    }
+    console.log(string)
+
+}
     </script>
 </html>
