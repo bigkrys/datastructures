@@ -2,59 +2,54 @@
 <html>
     <body></body>
     <script>
-let count = 0;
-_8Quene()
-function _8Quene(){
-    let result = new Array(8);//下标是行，值是第几列存放
-    setQuene(0,result);
-}
-function setQuene(row,result){
-    //在第row行放下棋子
-    if(row == 8){
-        //8个棋子都放慢了
-        printQune(result);
-        return
-    }
-    for(let column = 0;column<8;column++){
-        if(isCantSet(row,column,result)){
-            result[row] = column;
-            setQuene(row+1,result);
-        }
-    }
-}
-function isCantSet(row,column,result){
-    //判断在row行column列放置棋子是否合适
-    let leftup = column -1,rightup = row + 1;
-    for(let i = row -1;i>=0;i--){
-        if(result[i] == column){return false;}//先判断当前行是否有棋子放在 想放置位置的列上
-        if(leftup>=0){//判断左上角
-             if(result[i] == leftup){return false;}
-             leftup--;
-        }
-        if(rightup<8){
-            //判断右下角
-            if(result[i] == rightup) {return false;}
-            rightup ++;
-        }
-    }
-    return true;
-}
 
-function printQune(result){
-    count++;
-    let string = ''
-    for(let row = 0;row < 8;row++){
-        for(let column = 0;column<8;column++){
-            if(result[row] == column){
-                string+='Q'
-            }else{
-                string+='*'
-            }
+ function backBag(){
+    let items = [
+         {
+             name:'苹果',
+             weight:3,
+             value:5
+         },
+         {
+            name:'雪梨',
+            weight:2,
+            value:2
+        },
+        {
+            name:'草莓',
+            weight:1,
+            value:4,
+        },
+        {
+            name:'波罗蜜',
+            weight:1,
+            value:2
+        },
+        {
+            name:'皇帝柑',
+            weight:4,
+            value:10
         }
-        string+='\n'
+     ]
+     let bag = 8;//背包总容量
+     let i = 0,cw = 0,result = [],maxW = 0;//cw 为背包当前容量,maxW为背包最大价值时候的重量
+     find(0,0)
+     function find(i,cw){
+        if(cw == bag || i == items.length-1){
+             //装满或者考察完所有物品
+             if(cw>maxW) maxW = cw;
+             console.log(maxW,JSON.parse(JSON.stringify(result)))
+             result = []
+             return
+         }
+        find(i+1,cw);//不装
+        if((cw + items[i].weight )<= bag){//装
+            result.push(items[i])
+            find(i+1,cw+items[i].weight)
+        } 
     }
-    console.log(string)
 
-}
+ }
+ backBag()
     </script>
 </html>

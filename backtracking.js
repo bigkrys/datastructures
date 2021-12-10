@@ -13,60 +13,65 @@
  * 解决方案：
  * 将第i个棋子依次放在
  */
- let count = 0;
- _8Quene()
- function _8Quene(){
-     let result = new Array(8);//下标是行，值是第几列存放
-     setQuene(0,result);
- }
- function setQuene(row,result){
-     //在第row行放下棋子
-     if(row == 8){
-         //8个棋子都放慢了
-         printQune(result);
-         return
-     }
-     for(let column = 0;column<8;column++){
-         if(isCantSet(row,column,result)){
-             result[row] = column;
-             setQuene(row+1,result);
-         }
-     }
- }
- function isCantSet(row,column,result){
-     //判断在row行column列放置棋子是否合适
-     let leftup = column -1,rightup = row + 1;
-     for(let i = row -1;i>=0;i--){
-         if(result[i] == column){return false;}//先判断当前行是否有棋子放在 想放置位置的列上
-         if(leftup>=0){//判断左上角
-              if(result[i] == leftup){return false;}
-              leftup--;
-         }
-         if(rightup<8){
-             //判断右下角
-             if(result[i] == rightup) {return false;}
-             rightup ++;
-         }
-     }
-     return true;
- }
- 
- function printQune(result){
-     count++;
-     let string = ''
-     for(let row = 0;row < 8;row++){
-         for(let column = 0;column<8;column++){
-             if(result[row] == column){
-                 string+='Q'
-             }else{
-                 string+='*'
-             }
-         }
-         string+='\n'
-     }
-     console.log(string,count)
- 
- }
+ class Queen{
+    constructor(){
+        this.result = [];
+        this.count = 0;
+    }
+    setQuene(row){
+        //在第row行放下棋子
+        if(row == 8){
+            //8个棋子都放慢了
+            this.printQueen();
+            return
+        }
+        for(let column = 0;column<8;column++){
+            if(this.isCantSet(row,column)){
+                this.result[row] = column;
+                this.setQuene(row+1);
+            }
+        }
+    }
+    isCantSet(row,column){
+        //判断在row行column列放置棋子是否合适
+        let leftup = column -1,rightdown = column + 1;
+        for(let i = row -1;i>=0;i--){
+            if(this.result[i] == column){return false;}//先判断当前行是否有棋子放在 想放置位置的列上
+            if(leftup>=0 && this.result[i] == leftup){//判断左上角
+                return false;
+            }
+            if(rightdown<8 && this.result[i] == rightdown){
+                //判断右下角
+                return false;
+            }
+            leftup--;
+            rightdown ++;
+
+
+        }
+        return true;
+    }
+    printQueen(){
+        this.count++;
+        let string = ''
+        for(let row = 0;row < 8;row++){
+            for(let column = 0;column<8;column++){
+                if(this.result[row] == column){
+                    string+='Q'
+                }else{
+                    string+='*'
+                }
+            }
+            string+='\n'
+        }
+        console.log(string,this.count)
+    
+    }
+
+}
+
+let q = new Queen();
+q.setQuene(0)
 
  /**
   * 01 背包
@@ -78,3 +83,47 @@
   * 
   * 
   */
+ function backBag(){
+     let items = [
+         {
+             name:'苹果',
+             weight:3,
+             value:5
+         },
+         {
+            name:'雪梨',
+            weight:2,
+            value:2
+        },
+        {
+            name:'草莓',
+            weight:1,
+            value:4,
+        },
+        {
+            name:'波罗蜜',
+            weight:1,
+            value:2
+        },,
+        {
+            name:'皇帝柑',
+            weight:4,
+            value:10
+        }
+     ]
+     let bag = 8;//背包总容量
+     let i = 0,cw = 0;//cw 为背包当前容量
+     function find(i,cw){
+         if(cw == bag || i == items.length-1){
+             //装满或者考察完所有物品
+             console.log(cw,result)
+             return
+         }
+         find(i+1,cw);
+         if(cw + items[i] <= w){
+             result.push(items[i])
+             f(i+1,cw+items[i])
+         }
+    }
+ }
+ 
