@@ -3,53 +3,75 @@
     <body></body>
     <script>
 
- function backBag(){
-    let items = [
-         {
-             name:'苹果',
-             weight:3,
-             value:5
-         },
-         {
-            name:'雪梨',
-            weight:2,
-            value:2
-        },
-        {
-            name:'草莓',
-            weight:1,
-            value:4,
-        },
-        {
-            name:'波罗蜜',
-            weight:1,
-            value:2
-        },
-        {
-            name:'皇帝柑',
-            weight:4,
-            value:10
+function double11advance(items,w) {
+    let state = [];
+    for(let i = 0;i<items.length;i++){
+        let array = [];
+        for(let j = 0;j<=2*w;j++){
+            array[j] = false
         }
-     ]
-     let bag = 8;//背包总容量
-     let i = 0,cw = 0,result = [],maxW = 0;//cw 为背包当前容量,maxW为背包最大价值时候的重量
-     find(0,0)
-     function find(i,cw){
-        if(cw == bag || i == items.length-1){
-             //装满或者考察完所有物品
-             if(cw>maxW) maxW = cw;
-             console.log(maxW,JSON.parse(JSON.stringify(result)))
-             result = []
-             return
-         }
-        find(i+1,cw);//不装
-        if((cw + items[i].weight )<= bag){//装
-            result.push(items[i])
-            find(i+1,cw+items[i].weight)
-        } 
+        state[i] = array;
     }
-
- }
- backBag()
+    state[0][0] = true;
+    if(items[0].value<=2*w){
+        state[0][items[0].value] = true
+    }
+    for(let i = 1;i<items.length;i++){
+        for(let j = 0;j<=2*w;j++){
+            if(state[i-1][j]){
+                state[i][j] = state[i-1][j];
+            }
+        }
+        for(let j = 0;j<=2*w - items[i].value;j++){
+            if(state[i-1][j]){
+                state[i][j+items[i].value] = true
+            }
+        }
+    }
+    let j;
+    for(j = w;j<2*w;j++){
+        if(state[items.length-1][j]) break;
+    }
+    if(j == 2*w) return ;
+    for(let i = items.length-1;i>=1;i--){
+        if(j-items[i].value>=0 && state[i-1][j-items[i].value]){
+            console.log(items[i],'买')
+            j = j-items[i].value;
+        }
+    }
+    if(j!=0) console.log(items[0],'买')
+    console.log(state)
+}
+let items = [
+    {
+        name:'货品1',
+        value:20,
+    },
+    {
+        name:'货品2',
+        value:40,
+    },
+    {
+        name:'货品3',
+        value:50,
+    },
+    {
+        name:'货品4',
+        value:20,
+    },
+    {
+        name:'货品5',
+        value:80,
+    },
+    {
+        name:'货品6',
+        value:30,
+    },
+    {
+        name:'货品7',
+        value:45,
+    }
+]
+console.log(double11advance(items,200))
     </script>
 </html>

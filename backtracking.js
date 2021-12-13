@@ -83,47 +83,117 @@ q.setQuene(0)
   * 
   * 
   */
- function backBag(){
-     let items = [
-         {
-             name:'苹果',
-             weight:3,
-             value:5
-         },
-         {
-            name:'雪梨',
+  function backBag(){
+    let items = [
+        {
+            name:'苹果',
             weight:2,
-            value:2
+            value:5
         },
         {
-            name:'草莓',
-            weight:1,
-            value:4,
-        },
-        {
-            name:'波罗蜜',
-            weight:1,
-            value:2
-        },,
-        {
-            name:'皇帝柑',
-            weight:4,
-            value:10
-        }
-     ]
-     let bag = 8;//背包总容量
-     let i = 0,cw = 0;//cw 为背包当前容量
-     function find(i,cw){
-         if(cw == bag || i == items.length-1){
-             //装满或者考察完所有物品
-             console.log(cw,result)
-             return
-         }
-         find(i+1,cw);
-         if(cw + items[i] <= w){
-             result.push(items[i])
-             f(i+1,cw+items[i])
-         }
-    }
- }
+           name:'雪梨',
+           weight:2,
+           value:2
+       },
+       {
+           name:'草莓',
+           weight:4,
+           value:4,
+       },
+       {
+           name:'波罗蜜',
+           weight:6,
+           value:2
+       },
+       {
+           name:'皇帝柑',
+           weight:3,
+           value:10
+       }
+    ]
+   let bagWeight = 9;//背包的容量
+   let maxW = 0,maxV = 0;//背包最大容量
  
+   let result =[];
+    for(let i = 0;i<5;i++){
+        let array = [];
+        for(j=0;j<10;j++){
+            array[j] = 0
+        }
+        result.push(array);
+    }
+    //i是当前考察的第i个物品，cw是当前背包的容量,cv是总价值
+   function findItems(i,cw,cv){
+       if(cw == bagWeight || i == items.length-1){
+           //背包装满了 或者考察完所有的物品
+           if(cw>maxW){
+               maxW = cw;
+           }
+           if(cv>maxV){
+               maxV = cv;
+           }
+           
+           return
+       }
+       if(result[i][cw]) return;//result用来记录已经访问过的i,cw，如果已经访问过了就返回，减少重复访问
+       result[i][cw] = true;
+       findItems(i+1,cw,cv);//当前物品不装进背包，考察下一个物品
+       if(cw + items[i].weight <= bagWeight){
+           findItems(i+1,cw + items[i].weight,cv+items[i].value);//当前物品加进来
+       }
+   }
+   findItems(0,0,0);
+   return {
+    maxW,
+    maxV
+   };
+}
+console.log( backBag())
+
+
+
+
+
+/**
+ * 正则表达式
+ * 
+ */
+ class Pattern{
+    constructor(pattern){
+        this.matched = false;
+        this.pattern = pattern;
+        this.plen = pattern.length;
+    }
+    match(text) {
+        this.matched = false;
+        this.rmatch(0,0,text);
+        return this.matched;
+        
+    }
+    rmatch(ti,pj,text){
+        if(this.matched)return;//如果已经匹配 就不继续递归
+        if(pj == this.plen) {
+            //到达结尾
+            if(ti == text.length){
+                this.matched = true
+            }
+            return;
+        }
+        if(this.pattern[pj] == '*'){
+            for(let k = 0;k<text.length - ti;k++){
+                //把从0到ti的位置的字符 与pattern*后面的字符都匹配一次
+                this.rmatch(ti+k,pj+1,text)
+            }
+        }else if(this.pattern[pj] == '?'){
+            //完全相等 或者前面多一个字符 后面全部相等
+            this.rmatch(ti,pj+1,text)//完全相等的情况
+            this.rmatch(ti+1,pj+1,text)//字符串比它多一个字符 然后后面全部相等的情况
+        }else if(ti<text.length && this.pattern[pj] == text[ti]){
+            //两个字符都往后移进行对比
+            this.rmatch(ti+1,pj+1,text)
+        }
+
+    }
+}
+let p = new Pattern('?.com');
+console.log(p.match('.com'))
