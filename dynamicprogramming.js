@@ -1,5 +1,14 @@
 /**
  * 动态规划
+ * 一个模型 三个特征
+ * 一个模型：动态规划适合解决的问题的模型：“多阶段决策最优解模型”
+ * 三个特征：1、最优子结构(可以通过问题的子问题的最优解推导出问题的最优解)、无后效性、重复子问题
+ * 解决动态规划的两种思路：1、状态转移表法和状态转移方程
+ * 1、状态转移表：拿到问题的时候，定义状态，每个状态代表一个节点，然后画出递归树，从递归树中就可以看出来，
+ * 是否存在重复子问题。然后画出一个状态表，每个状态包含三个变量，行、列、数组值。
+ * 根据决策的先后过程，从前往后，根据递推关系，分阶段填充状态表中的每个状态，然后翻译成代码。
+ * 
+ * 2、状态转移方程：需要分析某个问题是如何通过子问题来递归求解，根据最优子结构写出地推公式。
  * 
  */
 
@@ -310,3 +319,329 @@ let items = [
     }
 ]
 console.log(double11advance(items,200))
+
+
+/**
+ * 假设我们有一个n*n的矩阵，存储的都是正整数。现在要从矩阵的左上角走到矩阵的右下角，计算最短路径长度
+ * 
+ *   0 1 2 3
+ * 0 1 3 5 9
+ * 1 2 1 3 4
+ * 2 5 2 6 7
+ * 3 6 8 4 3
+ * 
+ * 先用回溯解决这个问题
+ * 
+ * 思路-》回溯解决 画出递归树-》找出子问题-》翻译成代码
+ * 
+ */
+ function getMiniDist(){
+    let minDist = 9999;
+    let array = [
+        [1,3,5,9],
+        [2,1,3,4],
+        [5,2,6,7],
+        [6,8,4,3]
+    ];
+    miniDistBt(0,0,0,array)
+    function miniDistBt(i,j,dist,w) {
+        if(i == w.length-1 && j == w.length-1){
+            if(dist<minDist) {
+                minDist = dist;
+                return;
+            }
+        }
+        if(i < w.length-1){
+            //往下走
+            miniDistBt(i+1,j,dist+w[i][j],w);
+        }
+        if(j<w.length-1){
+            //往右走
+            miniDistBt(i,j+1,dist+w[i][j],w);
+        }
+    }
+    console.log(minDist)
+    return minDist;
+}
+/**
+ * 接下来 我们画出递归树
+ *                                               (0,0,1)
+ *                   (1,0,3)                                             (0,1,4)
+ *         (2,0,8)           (1,1,4)                           (1,1,4)            (0,2,9)
+ *    (3,0,14) (2,1,10)   (2,1,6)  (1,2,7)                (2,1,6)  (1,2,7)   (1,2,12)  (0,3,18)
+ * .....以此类推
+ * 
+ * 那么 用一个状态表来存储这个过程，数组中的i,j代表当前位置，数组中的值代表起点到当前位置的最短路径。
+ *   0  1  2  3
+ * 0 1  4  9  18
+ * 1 3  4  7  11
+ * 2 8  6  12 18
+ * 3 14 14 16 19
+ * 
+ * 所以最短路径就是19
+ */
+ function minDistDP(array){
+    let state = [],sum = 0;
+    for(let i = 0;i<array.length;i++){
+        let temp = []
+        for(let j = 0;j<array.length;j++){
+            temp[j] = 0
+        }
+        state.push(temp)
+        
+    }
+    for(let i = 0;i<array.length;i++){
+        //初始化第一行数据
+        sum += array[0][i];
+        state[0][i] = sum;
+    }
+    sum = 0;
+    for(let i = 0;i<array.length;i++){
+        //初始化第一行数据
+        sum += array[i][0];
+        state[i][0] = sum;
+    }
+    let i = 0
+    for( i = 1;i<array.length;i++){
+        for(let j = 1;j<array.length;j++){
+            let min = Math.min(state[i-1][j],state[i][j-1]);
+            state[i][j] = array[i][j]+min;
+        }
+    }
+    let n = state.length-1
+    return state[n][n];
+
+}
+let array = [
+        [1,3,5,9],
+        [2,1,3,4],
+        [5,2,6,7],
+        [6,8,4,3]
+    ];
+minDistDP(array)
+
+
+/**
+ * 状态转移方程
+ * 根据最优子结构 写出递归公式（状态转移方程）
+ * 两种实现方法：1、递归加状态表；2、迭代递推
+ * 就像上面的例子中 递归公式就是
+ * minDist(i,j) = w[i][j] + Min(w[i-1][j],w[i][j-1])
+ */
+
+ function minDist(array){
+    let mem = [],sum = 0,n = array.length;
+    for(let i = 0;i<n;i++){
+        let temp = []
+        for(let j = 0;j<n;j++){
+            temp[j] = 0
+        }
+        mem.push(temp)
+        
+    }
+    return miniDistBt(n-1,n-1)
+    function miniDistBt(i,j){
+        if(i == 0 && j == 0){return array[0][0];}//递归终止条件
+        if(mem[i][j] > 0 ) return mem[i][j];//已经遍历过了 直接返回
+        let minLeft = Number.MAX_VALUE,minUp = Number.MAX_VALUE
+        if(j-1>=0){
+            minLeft = miniDistBt(i,j-1);//他左边的子节点的值
+        }
+        if(i - 1>=0){
+            minUp = miniDistBt(i-1,j);//他上边的子节点的值
+        }
+        let cur = array[i][j] + Math.min(minLeft,minUp);
+        mem[i][j] = cur;
+        return cur;
+    }
+   
+
+}
+let array2 = [
+        [1,3,5,9],
+        [2,1,3,4],
+        [5,2,6,7],
+        [6,8,4,3]
+    ];
+console.log(minDist(array2),'minDIst')
+
+/**
+ * 计算两个字符串的莱温斯坦距离：
+ * 字符串距离：将一个字符串转换成另一个字符串 ，需要最少编辑的操作数
+ * 莱温斯坦距离：允许增加、删除、替换字符三个操作
+ * 
+ * 匹配两个字符串，当匹配到a[i]和b[j]
+ * 1、当a[i] == b[j],那么直接匹配下一个字符a[i+1],b[j+1]
+ * 2、当a[i] != b[j]，那么可以有这几种情况
+ * 
+ * a、删除a[i]或者在b[j]前面添加一个字符，然后继续匹配，也就是变成了a[i+1] 是否与b[j]相等
+ * b、删除b[j]或者在a[i]前面添加一个字符，然后继续匹配，也就是变成了a[i] 是否与b[j+1]相等
+ * c、将a[i]替换成b[j]，或者把b[j]替换成a[i]。然后继续匹配a[i+1]与b[j+1]
+ * 
+ * 我们先用代码实现上面的过程
+ */
+ function lwst(string1,string2){
+    let n = string1.length-1,m = string2.length-1,minDist = Number.MAX_VALUE;
+    lwstBack(0,0,0);
+    function lwstBack(i,j,edist){
+        if(i == n || j == m){
+            //匹配完成了
+            if(i<n){edist += (n - i);}
+            if(j<m){edist += (m - j);}
+            if(edist<minDist){minDist = edist;}
+            return;
+        }
+        if(string1[i] == string2[j]){
+            //匹配 继续匹配下一个字符
+            lwstBack(i+1,j+1,edist);
+        }else{
+            lwstBack(i+1,j,edist+1);
+            lwstBack(i,j+1,edist+1);
+            lwstBack(i+1,j+1,edist+1)
+        }
+    }
+    return minDist;
+
+}
+/**
+ * 接下来我们画出递归树
+ *                       （0，0，0）
+ *                        （1，1，0）
+ *      (2,1,1)             (1,2,1)            (2,2,1)
+ *      (3,2,1)      (2,2,2) (1,3,2) (2,3,2)   (3,2,2)(2,3,2)(3,3,2)
+ * 
+ * 可以看到i，j是有不一样的，所以是有重复子问题的，edit不一样的时候就选最小的那个
+ * 那么节点就变成了(i,j,minedist(i,j))
+ * 
+ * 可以知道 (i,j,minedist(i,j))这个节点有可能从三个地方过来分别是
+ *  1、(i-1,j,min)
+ *  2、(i,j-1,min)
+ *  3、(i-1,j-1,min)
+ * 
+ * 那么当a[i] == b[j]是
+ * 状态表 就变成了 min_edist(i-1,j)+1,min_edist(i,j-1)+1,min(i-1,j-1)
+ * 三个值中的最小值
+ * 当不等的时候就是
+ * min_edist(i-1,j)+1,min_edist(i,j-1)+1,min(i-1,j-1)+1,三个值中的最小值
+ * 那么表就变成下面这样 mitcmu mtacnu
+ *   0 1 2 3 4 5 
+ * 0 0 1 2 3 4 5
+ * 1 1
+ * 2 2
+ * 3 3
+ * 4 4
+ * 5 5
+ * 
+ */
+ function lwstDP(string1,string2){
+    let n = string1.length-1,m = string2.length-1;
+    let minedist = new Array(n+1).fill().map((item)=>new Array(m).fill(0)),sum = 0;
+
+    //初始化第一行第一列
+    for(let i = 0;i<=m;i++){
+        if(string1[0] == string2[i]){
+            minedist[0][i] = i;//将前面的全部删掉，edist = i
+        }else if(i != 0){
+            minedist[0][i] = minedist[0][i-1]+1;
+        }else{
+            minedist[0][i] = 1;//第一个不相等的时候 edist = 1
+        }
+    }
+    for(let i = 0;i<=n;i++){
+        if(string1[i] == string2[0]){
+            minedist[i][0] = i;//将前面的全部删掉，edist = i
+        }else if(i != 0){
+            minedist[i][0] = minedist[i-1][0]+1;
+        }else{
+            minedist[i][0] = 1;//第一个不相等的时候 edist = 1
+        }
+    }
+    for(let i=1;i<=n;i++){
+        for(let j = 1;j<=m;j++){
+            if(string1[i] == string2[j]){
+                minedist[i][j] = Math.min(Math.min(minedist[i-1][j]+1,minedist[i][j-1]+1),minedist[i-1][j-1])
+            }else{
+                minedist[i][j] = Math.min(Math.min(minedist[i-1][j]+1,minedist[i][j-1]+1),minedist[i-1][j-1]+1)
+            }
+        }
+    }
+    return minedist[n][m]
+} 
+
+
+
+
+/**
+ * 计算最长公共子串长度
+ * 最长公共子串只允许增加、删除字符两种操作，
+ * 匹配两个字符串，当匹配到a[i]和b[j]
+ * 
+ * 每个状态用(i,j,max_lcs)来记录当前最长公共子串长度。
+ * 
+ * 如果a[i]与b[j]互相匹配，将最大公共子串长度加1，继续考察a[i+1],b[j+1]
+ * 如果不匹配 z最长公共子串长度不
+ *  1、删除a[i]，或者在b[i]前面插入一个a[i]，继续考察a[i+1]和b[j]
+ *  2、删除b[i]，或者在a[i]前面插入一个b[j]，继续考察a[i]和b[j+1]
+ * 
+ * 所以当前最大子串有可能有三个状态转移过来
+ * 当a[i] == b[j]
+ * max_lcs(i,j) = Max(max(i-1,j) ,max(i,j-1),max(i-1,j-1)+1)
+ * 当a[i] != b[j]
+ * max_lcs(i,j) = Max(max(i-1,j) ,max(i,j-1),max(i-1,j-1))
+ * 
+ * mitcmu mtacnu
+ *   0 1 2 3 4 5
+ * 0 1 
+ * 1
+ * 2
+ * 3
+ * 4
+ * 5
+ */
+ function lcs(string1,string2){
+    let n = string1.length-1,m = string2.length-1;
+    let maxLcs = new Array(n+1).fill().map((item)=>new Array(m).fill(0)),sum = 0;
+
+    //初始化第一行第一列
+    for(let i = 0;i<=m;i++){
+        if(string1[0] == string2[i]){
+            maxLcs[0][i] = 1;//与第一个字符相等，最长子串为1
+        }else if(i != 0){
+            maxLcs[0][i] = maxLcs[0][i-1];
+        }else{
+            maxLcs[0][i] = 0;
+        }
+    }
+    for(let i = 0;i<=n;i++){
+        if(string1[i] == string2[0]){
+            maxLcs[i][0] = 1;//与第一个字符相等，最长子串为1
+        }else if(i != 0){
+            maxLcs[i][0] = maxLcs[i-1][0];
+        }else{
+            maxLcs[i][0] = 0;
+        }
+    }
+    for(let i = 1;i<=n;i++){
+        for(let j = 1; j<= m;j++){
+            if(string1[i] == string2[j]){
+                maxLcs[i][j] = Math.max(Math.max(maxLcs[i-1][j],maxLcs[i][j-1]),maxLcs[i-1][j-1]+1)
+            }else{
+                maxLcs[i][j] = Math.max(Math.max(maxLcs[i-1][j],maxLcs[i][j-1]),maxLcs[i-1][j-1])
+            }
+        }
+    }
+    return maxLcs[n][m];
+}
+/**
+ * y322. 零钱兑换
+ * 给你一个整数数组 coins ，表示不同面额的硬币；
+ * 以及一个整数 amount ，表示总金额。
+ * 计算并返回可以凑成总金额所需的 最少的硬币个数 。
+ * 如果没有任何一种硬币组合能组成总金额，返回 -1 。
+ * 你可以认为每种硬币的数量是无限的链接：https://leetcode-cn.com/problems/coin-change
+ */
+
+/**
+ * 我们有一个数字序列包含 n 个不同的数字，如何求出这个序列中的最长递增子序列长度？
+ * 比如 2, 9, 3, 6, 5, 1, 7 这样一组数字序列，它的最长递增子序列就是 2, 3, 5, 7，所以最长递增子序列的长度是 4。
+ */

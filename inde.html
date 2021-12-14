@@ -2,76 +2,40 @@
 <html>
     <body></body>
     <script>
+function lcs(string1,string2){
+    let n = string1.length-1,m = string2.length-1;
+    let maxLcs = new Array(n+1).fill().map((item)=>new Array(m).fill(0)),sum = 0;
 
-function double11advance(items,w) {
-    let state = [];
-    for(let i = 0;i<items.length;i++){
-        let array = [];
-        for(let j = 0;j<=2*w;j++){
-            array[j] = false
+    //初始化第一行第一列
+    for(let i = 0;i<=m;i++){
+        if(string1[0] == string2[i]){
+            maxLcs[0][i] = 1;//与第一个字符相等，最长子串为1
+        }else if(i != 0){
+            maxLcs[0][i] = maxLcs[0][i-1];
+        }else{
+            maxLcs[0][i] = 0;
         }
-        state[i] = array;
     }
-    state[0][0] = true;
-    if(items[0].value<=2*w){
-        state[0][items[0].value] = true
+    for(let i = 0;i<=n;i++){
+        if(string1[i] == string2[0]){
+            maxLcs[i][0] = 1;//与第一个字符相等，最长子串为1
+        }else if(i != 0){
+            maxLcs[i][0] = maxLcs[i-1][0];
+        }else{
+            maxLcs[i][0] = 0;
+        }
     }
-    for(let i = 1;i<items.length;i++){
-        for(let j = 0;j<=2*w;j++){
-            if(state[i-1][j]){
-                state[i][j] = state[i-1][j];
+    for(let i = 1;i<=n;i++){
+        for(let j = 1; j<= m;j++){
+            if(string1[i] == string2[j]){
+                maxLcs[i][j] = Math.max(Math.max(maxLcs[i-1][j],maxLcs[i][j-1]),maxLcs[i-1][j-1]+1)
+            }else{
+                maxLcs[i][j] = Math.max(Math.max(maxLcs[i-1][j],maxLcs[i][j-1]),maxLcs[i-1][j-1])
             }
         }
-        for(let j = 0;j<=2*w - items[i].value;j++){
-            if(state[i-1][j]){
-                state[i][j+items[i].value] = true
-            }
-        }
     }
-    let j;
-    for(j = w;j<2*w;j++){
-        if(state[items.length-1][j]) break;
-    }
-    if(j == 2*w) return ;
-    for(let i = items.length-1;i>=1;i--){
-        if(j-items[i].value>=0 && state[i-1][j-items[i].value]){
-            console.log(items[i],'买')
-            j = j-items[i].value;
-        }
-    }
-    if(j!=0) console.log(items[0],'买')
-    console.log(state)
+    return maxLcs[n][m];
 }
-let items = [
-    {
-        name:'货品1',
-        value:20,
-    },
-    {
-        name:'货品2',
-        value:40,
-    },
-    {
-        name:'货品3',
-        value:50,
-    },
-    {
-        name:'货品4',
-        value:20,
-    },
-    {
-        name:'货品5',
-        value:80,
-    },
-    {
-        name:'货品6',
-        value:30,
-    },
-    {
-        name:'货品7',
-        value:45,
-    }
-]
-console.log(double11advance(items,200))
+console.log(lcs('mitcmu','mtacnu'))
     </script>
 </html>
