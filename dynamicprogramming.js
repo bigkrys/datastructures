@@ -13,8 +13,17 @@
  */
 
 /**
+ * 
+ * 完全背包
+ * 有N件物品和一个容量是V的背包。每个物品只能使用一次，每种物品有无限件可以使用。
+ * 第i件物品的体积是wi，价值是vi。求将那些物品装入背包，可以使这些物品的总体积不超过背包容量、
+ * 且总价值最大呢？
+ * 请输出最大价值。
+ */
+
+/**
  * 01背包
- * 对于一组不同重量，不可分割的物品，需要选怎一些装入背包，在满足背包
+ * 对于一组不同重量，不可分割的物品，需要选一些装入背包，在满足背包
  * 最大重量限制的前提下，背包中的物品总重量的最大值是多少
  * 
  * 
@@ -22,7 +31,7 @@
  * 然后记录每一个阶段的状态的集合（去掉重复的）,然后通过当前阶段的状态的集合 来推导下一个阶段的状态的集合，动态的往前推进
  * 比如 一个物品的重量分别是2，2，4，6，3
  * 那么每次选择放或者不放的情况就像下面这样
- *                           (0,0)
+ *                                                 (0,0)
  *                  (1,0)                                                    (1,2)
  *          (2,0)                      (2,2)                     (2,2)                     (2,4)
  *   (3,0)        (3,4)          (3,2)      (3,6)          (3,2)       (3,6)       (3,4)         (3,8)
@@ -638,14 +647,103 @@ console.log(minDist(array2),'minDIst')
  * 假设你站在第一层，往下移动，我们把移动到最底层所经过的所有数字之和，定义为路径的长度。
  * 请你编程求出从最高层移动到最底层的最短路径长度。
  */
+
+
+
 /**
- * y322. 零钱兑换
- * 给你一个整数数组 coins ，表示不同面额的硬币；
- * 以及一个整数 amount ，表示总金额。
- * 计算并返回可以凑成总金额所需的 最少的硬币个数 。
- * 如果没有任何一种硬币组合能组成总金额，返回 -1 。
- * 你可以认为每种硬币的数量是无限的链接：https://leetcode-cn.com/problems/coin-change
+ * 118. 杨辉三角
+ * https://leetcode-cn.com/problems/pascals-triangle/
  */
+ var generate = function(numRows) {
+    //1、先把dp数组初始化了
+    let result = new Array(numRows);
+    for(let i = 0;i<numRows;i++){
+        let sonArray = new Array(i+1);
+        sonArray[0] = 1;
+        sonArray[i] = 1;
+        result[i] = sonArray
+    }
+
+    //2、回溯法 就是遍历 
+    for(let i = 2;i<numRows;i++){
+        for(let j = 1;j<i;j++){
+            result[i][j] = result[i-1][j-1] + result[i-1][j]
+        }
+    }
+    return result;
+};
+/**
+ * 
+119. 杨辉三角 II
+https://leetcode-cn.com/problems/pascals-triangle-ii/
+ */
+var getRow = function(rowIndex) {
+    let numRows = rowIndex+1
+ let result = new Array(numRows);
+    for(let i = 0;i<numRows;i++){
+        let sonArray = new Array(i+1);
+        sonArray[0] = 1;
+        sonArray[i] = 1;
+        result[i] = sonArray
+    }
+
+   
+    for(let i = 2;i<numRows;i++){
+        for(let j = 1;j<i;j++){
+            result[i][j] = result[i-1][j-1] + result[i-1][j]
+        }
+    }
+    return result[rowIndex];
+};
+ /**
+         * 给你一个整数数组 coins ，表示不同面额的硬币；以及一个整数 amount ，表示总金额。
+         * 计算并返回可以凑成总金额所需的 最少的硬币个数 。如果没有任何一种硬币组合能组成总金额，返回 -1 。
+         * 你可以认为每种硬币的数量是无限的
+         * 
+         * 1、首先定义状态，每个状态代表一个节点。
+         * 那么这里怎么定义一个节点呢？
+         * (i,nums)来定义一个节点，代表，组成金额i至少需要nums个硬币。
+         * coins = [1, 2, 5], amount = 11
+         * 比如amout = 11，那么一共有 0 1 2 3 4 5 6 7 8 9 10 11个节点
+         * 其中state[0] = 0 ，因为组成0元面额，不需要硬币
+         * state[1] = 1,组成1元面额 ，需要一个1元硬币
+         * state[2] = 1,组成2元面额，需要一个2元硬币
+         * state[3] = 2,组成3元面额，需要一个1元一个2元硬币
+         * state[4] = 2，组成4元面额，需要2个2元硬币
+         * state[5] = 1,组成5元面额，需要1个1元硬币
+         * state[6] = 2,组成6元面额，需要1个1元硬币，1个5元硬币
+         * state[7] = 2，组成7元硬币，需要1个2元硬币，1个5元硬币
+         * state[8] = 3，组成8元硬币，需要1个1元、1个2元、1个5元硬币
+         * state[9] = 3，组成9元硬币，需要2个2元硬币，1个5元硬币
+         * state[10] = 2，组成10元硬币，需要2个5元硬币
+         * state[11] = 3，组成1元硬币，需要2个5元硬币，1个1元硬币
+         * 
+         * 那么反过来是不是可以这样看
+         * 求state[11]的时候，只需要看使用state[10]、state[9]、state[6] 三者最小的值再+1
+         * 因为你选一个硬币，就是在当前硬币总金额基础上再选择一个硬币
+         * 那么 state[i] = Min(state[i-coins(j)])+1
+         *  
+        */
+    var coinChange = function(coins, amount) {
+        let state = new Array(amount+1).fill(amount+1);
+        state[0] = 0;
+    for(let i = 1;i<=amount;i++){
+        //组成i元需要的币数
+        for(let j = 0;j<coins.length;j++){
+            //每次 探索对应硬币面值
+            if(i-coins[j]>=0 && state[i-coins[j]]!=amount+1){
+                //选取的硬币面值 只能小于等于当前金额 并且对应的金额基础已经赋值
+                state[i] = Math.min(state[i],state[i-coins[j]]+1)
+            }
+
+        } 
+    }
+    if(state[amount] == amount+1){
+        return -1;
+    }else{
+        return state[amount];
+    }
+    };
 
 /**
  * 我们有一个数字序列包含 n 个不同的数字，如何求出这个序列中的最长递增子序列长度？
