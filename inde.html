@@ -2,56 +2,30 @@
 <html>
     <body></body>
     <script>
-        /**
-         * 给你一个整数数组 coins ，表示不同面额的硬币；以及一个整数 amount ，表示总金额。
-         * 计算并返回可以凑成总金额所需的 最少的硬币个数 。如果没有任何一种硬币组合能组成总金额，返回 -1 。
-         * 你可以认为每种硬币的数量是无限的
-         * 
-         * 1、首先定义状态，每个状态代表一个节点。
-         * 那么这里怎么定义一个节点呢？
-         * (i,nums)来定义一个节点，代表，组成金额i至少需要nums个硬币。
-         * coins = [1, 2, 5], amount = 11
-         * 比如amout = 11，那么一共有 0 1 2 3 4 5 6 7 8 9 10 11个节点
-         * 其中state[0] = 0 ，因为组成0元面额，不需要硬币
-         * state[1] = 1,组成1元面额 ，需要一个1元硬币
-         * state[2] = 1,组成2元面额，需要一个2元硬币
-         * state[3] = 2,组成3元面额，需要一个1元一个2元硬币
-         * state[4] = 2，组成4元面额，需要2个2元硬币
-         * state[5] = 1,组成5元面额，需要1个1元硬币
-         * state[6] = 2,组成6元面额，需要1个1元硬币，1个5元硬币
-         * state[7] = 2，组成7元硬币，需要1个2元硬币，1个5元硬币
-         * state[8] = 3，组成8元硬币，需要1个1元、1个2元、1个5元硬币
-         * state[9] = 3，组成9元硬币，需要2个2元硬币，1个5元硬币
-         * state[10] = 2，组成10元硬币，需要2个5元硬币
-         * state[11] = 3，组成1元硬币，需要2个5元硬币，1个1元硬币
-         * 
-         * 那么反过来是不是可以这样看
-         * 求state[11]的时候，只需要看使用state[10]、state[9]、state[6] 三者最小的值再+1
-         * 因为你选一个硬币，就是在当前硬币总金额基础上再选择一个硬币
-         * 那么 state[i] = Min(state[i-coins(j)])+1
-         * 
-         *     
-         *  
-        */
-        var coinChange = function(coins, amount) {
-            let state = new Array(amount+1).fill(amount+1);
-           state[0] = 0;
 
-           for(let i = 1;i<=amount;i++){
-               //组成i元需要的币数
-               for(let j = 0;j<coins.length;j++){
-                   //每次 探索对应硬币面值
-                   if(i-coins[j]>=0 && state[i-coins[j]]!=amount+1){
-                       //选取的硬币面值 只能小于等于当前金额 并且对应的金额基础已经赋值
-                       state[i] = Math.min(state[i],state[i-coins[j]]+1)
-                   }
 
-               }
-           }
-           return state[amount]
-           console.log(state)
-        };
-       console.log(coinChange([1,2,5],11))
+
+
+
+
+
+
+
+var countBits = function(n) {
+    let result = [];
+    for(let i = 0;i<=n;i++){
+        let bits = i.toString(2);
+        let count = 0;
+        for(let j = 0;j<bits.length;j++){
+            if(bits[j] == '1'){
+                count++;
+            }
+        }
+        result.push(count)
+    }
+    return result;
+};
+       console.log(countBits(2))
         
     </script>
 </html>

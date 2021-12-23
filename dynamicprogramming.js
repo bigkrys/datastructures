@@ -12,14 +12,12 @@
  * 
  */
 
-/**
- * 
- * 完全背包
- * 有N件物品和一个容量是V的背包。每个物品只能使用一次，每种物品有无限件可以使用。
- * 第i件物品的体积是wi，价值是vi。求将那些物品装入背包，可以使这些物品的总体积不超过背包容量、
- * 且总价值最大呢？
- * 请输出最大价值。
- */
+
+
+
+
+
+
 
 /**
  * 01背包
@@ -40,7 +38,7 @@
  * 
  * 接下来 遍历每一层的时候 就把重复的节点合并，只记录不同的状态，来保证每一层不同的状态不会超过w个。
  * 用一个二维数组来记录每层可以达到的不同状态
- * 我们这里一共有4个物品，背包的总重量为9，所以列数为9，确保每次决策完背包的重量不超过9
+ * 我们这里一共有5个物品，背包的总重量为9，所以列数为9，确保每次决策完背包的重量不超过9
  * 初始状态的数组如下(下标从0开始，上面的序号依次减1)
  *   0 1 2 3 4 5 6 7 8 9
  * 0 0 0 0 0 0 0 0 0 0 0
@@ -185,6 +183,7 @@ console.log( knapsack2([2,2,4,6,3],9))
  * 也就是说对于(i,cw)相同的不同节点，只需要保留cv更大的那个节点，
  */
  function knapsackValue() {
+  
     let items = [
         {
             name:'苹果',
@@ -250,6 +249,91 @@ console.log( knapsack2([2,2,4,6,3],9))
     return maxValue
 }
 console.log(knapsackValue())
+/**
+ * 
+ * 完全背包
+ * 有N件物品和一个容量是V的背包。每个物品只能使用一次，每种物品有无限件可以使用。
+ * 第i件物品的体积是wi，价值是vi。求将那些物品装入背包，可以使这些物品的总体积不超过背包容量、
+ * 且总价值最大呢？
+ * 请输出最大价值。
+ * 
+ * 与01背包不一样的是，物品有无限件可以使用，那就不能根据物品一个个的来决策构造二叉树，从而构造状态表了。
+ * 换一个思路，我们的节点仍然使用state[i][j]来表示，在物品[0,i]中，不超过指定背包重量j，获得的最大价值。
+ * 那么每次我们怎么选择呢？
+ * 我们换做从物种来选择，每次选择一个物品进入背包的时候，都是从[0,i]这么多物种中，选择一个，然后选择价值最大的一个。
+ * 
+ * 假设 物种重量数组是 [2,2,4,6,3],价值数组是[5,2,4,2,10]，背包重量是9
+ * 
+ * i = 0的时候，选择物品0，
+ * 
+ * 个数如下
+ *    0  1  2  3  4  5  6  7  8  9
+ * 0  0  0  1  0  2  0  3  0  4  0
+ * 
+ * 加上对应的价值就是下面这样
+ *    0  1  2  3  4   5  6   7  8  9
+ * 0  0  0  5  0  10  0  15  0  20  0 
+ * 
+ * 当i=1的时候，代表可以选择下标为1这两个物品 ,
+
+ * 加上价值就是这样
+  *    0  1  2  3  4   5  6   7  8  9
+ * 0   0  0  5  0  10  0  15  0  20  0 
+ * 1   0  0  5  2  10  4  15  6  20  8  
+ * 
+ * 依次类推，得到矩阵如下：
+ *     0  1  2  3  4   5  6   7  8  9
+ * 0   0  0  5  0  10  0  15  0  20  0 
+ * 1   0  0  5  2  10  4  15  6  20  8  
+ * 2   0  0  5  2  10  4  15  6  20  8
+ * 3   0  0  5  2  10  4  15  6  20  8
+ * 4   0  0  5  10 10  15 20  20 25  30 
+ * 
+ * 
+ * 
+ * 可以看到
+ * 1、当i>=1的时候，选取的个数i要满足i*weights[i]<=maxWeight
+ * 2、每次选取第i个物品的时候，逐个的去选取k个物品，其中k*weight[i]<=j,j是当前背包的内容
+ * 3、每次决策一个节点的时候有 当前选取k个i物品对应的价值，还有不选取k个物品对应的价值
+ * 其中选取k个i物品对应的价值 = state[i-1][j-k*weights[i]]+k*values[i];
+ * 其中，j-k*weights[i]代表 没装k个i物品之前背包的容量，再加上k*values[i]，表示装入k个i物品
+ * 
+ * 不选取就是 state[i][j],什么都不做
+ * 
+ * 所以 state[i][j] = Math.max(state[i][j],state[i-1][j-k*weights[i]]+k*values[i])
+ * 
+ */
+
+ function CompletePack(weights,values,maxWeight){
+    //先初始化状态数组
+    let n = weights.length;
+    let state = new Array(n+1);
+    for(let i = 0;i<n;i++){
+        state[i] = new Array(maxWeight+1).fill(0);
+    }
+    //初始化第一行 枚举第一个物品可以选择的个数 然后赋值
+    for(let i = 0;i * weights[0]<=maxWeight;i++){
+        state[0][i*weights[0]] = i*values[0]
+    }
+    for(let i = 1;i<n;i++){
+        for(let j = 0;j<=maxWeight;j++){
+            for(let k = 0;k*weights[i]<=j;k++){
+                //枚举下标为i的物品 可以选择的个数
+                 state[i][j] = Math.max(state[i][j],state[i-1][j-k*weights[i]]+k*values[i])
+            }
+         }
+    }
+    return state[n-1][maxWeight]
+}
+
+
+
+
+
+
+
+
+
 
 /**
  * 计算购物车中
@@ -727,22 +811,39 @@ var getRow = function(rowIndex) {
     var coinChange = function(coins, amount) {
         let state = new Array(amount+1).fill(amount+1);
         state[0] = 0;
-    for(let i = 1;i<=amount;i++){
-        //组成i元需要的币数
-        for(let j = 0;j<coins.length;j++){
-            //每次 探索对应硬币面值
-            if(i-coins[j]>=0 && state[i-coins[j]]!=amount+1){
-                //选取的硬币面值 只能小于等于当前金额 并且对应的金额基础已经赋值
-                state[i] = Math.min(state[i],state[i-coins[j]]+1)
-            }
+        for(let i = 1;i<=amount;i++){
+            //组成i元需要的币数
+            for(let j = 0;j<coins.length;j++){
+                //每次 探索对应硬币面值
+                if(i-coins[j]>=0 && state[i-coins[j]]!=amount+1){
+                    //选取的硬币面值 只能小于等于当前金额 并且对应的金额基础已经赋值
+                    state[i] = Math.min(state[i],state[i-coins[j]]+1)
+                }
 
-        } 
-    }
-    if(state[amount] == amount+1){
-        return -1;
-    }else{
-        return state[amount];
-    }
+            } 
+        }
+        if(state[amount] == amount+1){
+            return -1;
+        }else{
+            return state[amount];
+        }
+    };
+    var coinChange3 = function(coins, amount) {
+        //使用完全背包的方法：
+        let n = coins.length;
+        let state =  new Array(amount+1).fill(amount+1);
+        state[0] = 0;
+        for(let i = 0;i<n;i++){
+            let coin = coins[i];
+            for(let j = coin;j<=amount;j++){
+                state[j] = Math.min(state[j],state[j-coin]+1)
+            }
+        }
+        if(state[amount] == amount+1){
+            return -1;
+        }else{
+            return state[amount]
+        }
     };
 
 /**
