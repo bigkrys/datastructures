@@ -3,29 +3,20 @@
     <body></body>
     <script>
 
+var minCostClimbingStairs = function(cost) {
+    let n = cost.length,result = new Array(n+1).fill(Number.MAX_SAFE_INTEGER);
+    //因为可以选择下标为0或者1的作为开始点
+    result[0] = 0;
+    result[1] = 0;
 
-
-
-
-
-
-
-
-var countBits = function(n) {
-    let result = [];
-    for(let i = 0;i<=n;i++){
-        let bits = i.toString(2);
-        let count = 0;
-        for(let j = 0;j<bits.length;j++){
-            if(bits[j] == '1'){
-                count++;
-            }
-        }
-        result.push(count)
+    for(let i = 2;i<=n;i++){
+        result[i] = Math.min(result[i-1]+cost[i-1],result[i-2]+cost[i-2]);
     }
-    return result;
+    return result[n];
+    
+
 };
-       console.log(countBits(2))
+console.log(minCostClimbingStairs([1, 100, 1, 1, 1, 100, 1, 1, 100, 1]))
         
     </script>
 </html>
