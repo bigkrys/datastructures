@@ -2,42 +2,55 @@
 <html>
     <body></body>
     <script>
-
-var numWays = function(n, relation, k) {
-    let result = new Array(n),dist =new Array(n).fill(false),count = 0;
-    for(let i = 0;i<n;i++){
-        result[i] = new Array(n).fill(0)
-    }
-    for(let i = 0;i<relation.length;i++){
-        let node = relation[i];
-        result[node[0]][node[1]] = 1
-    }
-    console.log(result)
-    //先尝试能走得通不
-    dist[0] = true
-    getRoute(0,0,result,dist,0);
-    function getRoute(i,j,result,dist,step){
-        if(i == n-1 ){
-            if(step == k){
-                count++;
-            }
-            return;
+class Graph{
+    constructor(v){
+        this.v = v;//顶点的数组
+        let adj = new Array(v.length);//邻接矩阵
+        for(let i = 0;i<v.length;i++){
+            adj[i] = new Array();//点之间的关系
         }
-        //首先在当前节点寻求可以走的通点
-        //需要注意的是 需要约束步数
-        for(j;j<n;j++){
-            if(result[i][j] == 1 && !dist[j]){
-                console.log(i,j,step)
-                dist[j] = true
-                getRoute(j,0,result,dist,step+1);
+        this.adj = adj;
+    }
+    addEdge(s,t){
+        // s指向t的边 t依赖s
+        this.adj[t].push(s)
+    }
+    topoSortByKahn(){
+        //统计每个顶点的入度  顶点的入度就是第i列中为1的个数
+        let inDegree = new Array(this.v.length).fill(0);
+        for(let i = 0;i<this.v.length;i++){
+            for(let j = 0;j<this.adj[i].length;j++){
+                let w = this.adj[i][j]//顶点w这里的j只是邻接表的一个下表，指向的w才是顶点
+                inDegree[w]++;
             }
         }
-
+        let queue = [],string = '';
+        for(let i = 0;i<this.v.length;i++){
+            if(inDegree[i] == 0) {
+                queue.push(i);//先把入度为0的装进队列
+                break;
+            }
+        }
+        while(queue.length>0){
+            let i  = queue.shift();//队头出队
+            string  += this.v[i]+'->';
+            for(let j = 0;j<this.adj[i].length;j++){
+                //对i->k的顶点k，全部入度-1
+                let k = this.adj[i][j];
+                inDegree[k]--;
+                if(inDegree[k] == 0 ) {
+                    queue.push(k);
+                }
+            }
+        }
+        console.log(string)
     }
-    return count;
+}
+let s = new Graph(['a','b','c','d']);
+s.addEdge(0,1);
+s.addEdge(1,2);
+s.addEdge(3,1);
+s.topoSortByKahn()
 
-};
-console.log(numWays(3,[[0,1],[0,2],[2,1],[1,2],[1,0],[2,0]],5))
-        
     </script>
 </html>
