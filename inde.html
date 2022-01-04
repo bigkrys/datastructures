@@ -2,19 +2,55 @@
 <html>
     <body></body>
     <script>
-        var hasCycle = function(head) {
-            let hash = new Set(),p = head,i = 0;
-            while(p){
-                if(p.val &&  !hash.has(i)){
-                   hash.add(i)
-                }else if(p.val &&  hash.has(i)){
-                    return true
-                }
-                i++;
-                p = p.next;
+class Graph{
+    constructor(v){
+        this.v = v;//顶点的数组
+        let adj = new Array(v.length);//邻接矩阵
+        for(let i = 0;i<v.length;i++){
+            adj[i] = new Array();//点之间的关系
+        }
+        this.adj = adj;
+    }
+    addEdge(s,t){
+        // s指向t的边 s依赖t
+        this.adj[s].push(t)
+    }
+    topoSortByDFS(){
+        //统计每个顶点的入度  顶点的入度就是第i列中为1的个数
+        let inDegree = new Array(this.v.length).fill(0);
+        for(let i = 0;i<this.v.length;i++){
+            for(let j = 0;j<this.adj[i].length;j++){
+                let w = this.adj[i][j]//顶点w这里的j只是邻接表的一个下表，指向的w才是顶点
+                inDegree[w]++;
             }
-            return false;
-        };
-        
+        }
+        let queue = [],string = '';
+        for(let i = 0;i<this.v.length;i++){
+            if(inDegree[i] == 0) {
+                queue.push(i);//先把入度为0的装进队列
+                break;
+            }
+        }
+        while(queue.length>0){
+            let i  = queue.shift();//队头出队
+            string  += this.v[i]+'->';
+            for(let j = 0;j<this.adj[i].length;j++){
+                //对i->k的顶点k，全部入度-1
+                let k = this.adj[i][j];
+                inDegree[k]--;
+                if(inDegree[k] == 0 ) {
+                    queue.push(k);
+                }
+            }
+        }
+        console.log(string)
+    }
+}
+let s = new Graph(['a','b','c','d']);
+s.addEdge(0,1);
+s.addEdge(1,2);
+s.addEdge(3,1);
+s.topoSortByKahn()
+
     </script>
 </html>

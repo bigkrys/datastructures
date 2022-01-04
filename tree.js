@@ -245,30 +245,209 @@ https://leetcode-cn.com/problems/minimum-depth-of-binary-tree/
  */
 var minDepth = function(root) {
     if(root == null) return 0;
-    let left = maxDepth(root.left);
-    let right = maxDepth(root.right);
+    let left = minDepth(root.left);
+    let right = minDepth(root.right);
     return Math.min(left,right)+1;
 };
 
 
 
 /**
- * 平衡二叉树：严格的平衡二叉树的定义是这样的：二叉树中任意一个节点的左右子树的高度相差不能大于1.
- * 平衡二叉树出现的初衷是要解决普通二叉树在频繁的插入、删除等动态更新以后，出现时间复杂度退化的问题。
- * 所以说，平衡二叉查找树（既符合平衡二叉树的条件，又符合二叉查找数的条件）中，平衡是指树左右看起来对称，不会
- * 出现左子树很高、右子树很低的情况。
+ * 二叉树的深度优先搜索（就是二叉树的前序遍历）
+ * 从根节点触发，沿着左子树方向进行纵向遍历，直到找到叶节点为止。
+ * 然后回溯到前一个节点，进行右子树节点的遍历，知道遍历完所有可达到节点。
  * 
+ *       17     
+ *   16     13  
+ * 5   6   7   8    
+ * 像上面这样的二叉树，深度优先遍历输出就是
  * 
- * 
- * 红黑树：不严格符合平衡二叉查找树条件的平衡二叉查找树，红色是代表有数据的，黑色代表的是数据为null的。
- * a.根节点是黑色的；
- * b.每个叶子节点都是黑色的节点，也就是说 叶子节点是不存储数据的；
- * c.任何相邻的节点都不能同时为红色，也就是说如果父节点是红色的，那么子节点就是黑色的。
- * d.每个节点，从该节点开始到达其叶子节点的路径中包含相同的黑色节点。
- * 
- * 
- * 一棵极其平衡的二叉树->满二叉树或完全二叉树的高度大约是log2n，所以如果要证明红黑树是近似平衡的，
- * 只需要分析红黑树的高度是否比较稳定的趋近log2n就可以了。
- * 
- * 
+ * 17 16 5 6 13 7 8
+ *      
  */
+
+ function treeDFS(node){
+    console.log(node.value);
+    if(node.left){
+        treeDFS(node.left);
+    }
+    if(node.right){
+        treeDFS(node.right);
+    }
+    return
+}
+function treeDFS(node,data){
+    if(node == null) return false;
+    if(node.value == data){
+        return true
+    }
+    let left = treeDFS(node.left,data);
+    let right = treeDFS(node.right,data);
+    return left || right
+}
+
+
+/**
+ * 广度优先搜索
+ * 从根节点开始，一层一层的输出
+ *       17     
+ *   16     13  
+ * 5   6   7   8    
+ * 
+ * 输出：17 16 13 5 6 7 8
+ * 拿一个队列来记录：首先将元素push进队列，不断的判断队列中是否还有元素。如果有，证明还没有遍历完树。
+ * 然后将左右子树push进队列。此时每次循环都是 先把当前节点出队，然后将左右子节点push进队列中。
+ */
+
+ function treeBFS(node){
+    if(node == null) return nul;
+    let quene = [],result = [];
+    quene.push(node);
+    while(quene.length>0){
+        let root = quene.shift()//取队首元素
+        result.push(root.value);
+        if(root.left){quene.push(root.left)}
+        if(root.right){quene.push(root.right)}
+    }
+    return result;
+}
+
+/**
+ * 102. 二叉树的层序遍历
+ * https://leetcode-cn.com/problems/binary-tree-level-order-traversal/
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number[][]}
+ */
+ var levelOrder = function(root) {
+     if(root == null) return [];
+     let q = [],result = [];
+     q.push(root)
+     while(q.length >0){
+        let currentSize = q.length;//当前层的长度
+        result.push([]);//先构造一个空的数组
+        for(let i = 1;i <= currentSize;i++){
+            //把属于当前层的节点取出来,再将它们的左右子节点push进队列
+            let node = q.shift();
+            result[result.length-1].push(node.val);
+            if(node.left){q.push(node.left)}
+            if(node.right){q.push(node.right)}
+        }
+       
+     }
+     return result;
+};
+
+
+
+/**]
+ * LCP 44. 开幕式焰火
+ * https://leetcode-cn.com/problems/sZ59z6/
+ */
+
+var numColor = function(root) {
+    let set = new Set()
+    treeDFS(root,set);
+    return set.size
+  };
+   function treeDFS(node,set){
+       if(node.val){
+           set.add(node.val);
+       }
+      if(node.left){
+          treeDFS(node.left,set);
+      }
+      if(node.right){
+          treeDFS(node.right,set);
+      }
+      return
+  }
+
+  /**
+   * 144. 二叉树的前序遍历
+   * https://leetcode-cn.com/problems/binary-tree-preorder-traversal/
+   */
+  /**
+ * @param {TreeNode} root
+ * @return {number[]}
+ */
+var preorderTraversal = function(root) {
+    if(root == null) return [];
+    let result = [];
+    preorder(root,result);
+    return result;
+   
+    
+};
+var preorder = function(root,result){
+    if(root){
+        if(root.val) result.push(root.val);
+        if(root.left) preorder(root.left,result);
+        if(root.right) preorder(root.right,result);
+    }
+}
+
+//解答二
+var preorderTraversal = function(root) {
+    if(root == null) return [];
+    let visited = [],result = [];
+    visited.push(root)
+    while(visited.length>0){
+        let currentNode = visited.pop()
+        result.push(currentNode.val)
+        if(currentNode.right) visited.push(currentNode.right);
+        if(currentNode.left) visited.push(currentNode.left);
+    }
+    return result;
+        
+};
+
+/**
+ * 145. 二叉树的后序遍历
+ * https://leetcode-cn.com/problems/binary-tree-postorder-traversal/
+ */
+ var postorderTraversal = function(root) {
+    if(root == null) return [];
+   let visited = [],result = [];
+   postorder(root,result)
+   return result;
+                                                              
+
+};
+var postorder = function(root,result){
+   if(root){
+       if(root.left) postorder(root.left,result);
+       if(root.right) postorder(root.right,result);
+       if(root.val) result.push(root.val);
+   }
+}
+//解答二 利用前序改顺序 然后翻转
+var postorderTraversal = function(root) {
+    if(root == null) return [];
+    let visited = [],result = [];
+    visited.push(root)
+    while(visited.length>0){
+        let currentNode = visited.pop()
+        result.push(currentNode.val)
+        if(currentNode.left) visited.push(currentNode.left);
+        if(currentNode.right) visited.push(currentNode.right);
+
+    }
+    return result.reverse();
+                                                               
+
+};
+
+/**
+ * 226. 翻转二叉树
+ * https://leetcode-cn.com/problems/invert-binary-tree/
+ */
+ var invertTree = function(root) {
+   if(root == null) return null;
+   let left =  invertTree(root.left);
+   let right = invertTree(root.right);
+   root.left = right;
+   root.right = left;
+   return root;
+};
