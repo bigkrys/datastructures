@@ -12,10 +12,10 @@ class Graph{
         this.adj = adj;
     }
     addEdge(s,t){
-        // s指向t的边 t依赖s
-        this.adj[t].push(s)
+        // s指向t的边 s依赖t
+        this.adj[s].push(t)
     }
-    topoSortByKahn(){
+    topoSortByDFS(){
         //统计每个顶点的入度  顶点的入度就是第i列中为1的个数
         let inDegree = new Array(this.v.length).fill(0);
         for(let i = 0;i<this.v.length;i++){
