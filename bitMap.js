@@ -1,8 +1,8 @@
-<!DOCTYPE html>
-<html>
-    <body></body>
-    <script>
-class BitMap{
+/**
+ * 位图
+ * 
+ */
+ class BitMap{
     constructor(nbits){
         this.nbits = nbits;
         this.bytes = new Array(16+1);
@@ -25,11 +25,3 @@ class BitMap{
 let b = new BitMap(32);
 b.set(5);
 console.log(b.get(5))
-
-
-
-
-
-
-    </script>
-</html>
