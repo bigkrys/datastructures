@@ -102,23 +102,25 @@ class SkipList{
         return null;
     }
     remove(value){
-        let _node;
+        let valueNode;
         let  p = this.head;
-        const update = new Array();
-        update.push(new Node());
+        const temp = new Array();
+        temp.push(new Node());
         for(let i = this.levelCount - 1;i>=0 ;i--){
             while(p.refer[i] != undefined && p.refer[i].data < value){
                 p = p.refer[i];
             }
-            update[i] = p;
+            temp[i] = p;
         }
         if(p.refer[0] != undefined && p.refer[0].data == value){
-            _node = p.refer[0];
+            valueNode = p.refer[0];
+            //把各个索引层对应的节点都删掉 
             for(let i = 0;i<= this.levelCount - 1 ; i++){
-                if(update[i].refer[i] != undefined && update.refer[i].data == value){
-                    update[i].refer[i] = update[i].refer[i].refer[i];
+                if(temp[i].refer[i] != undefined && temp.refer[i].data == value){
+                    temp[i].refer[i] = temp[i].refer[i].refer[i];
                 }
             }
+            return valueNode;
         }
         return null;
     }
